@@ -13,14 +13,43 @@ extension Note: Identifiable { public var id: UInt8 { midi } }
 // MARK: - Instrument
 
 public enum Instrument: String {
-  case guitar = "Guitar"
+  case acoustic = "Acoustic"
+  case electric = "Electric"
   case bass = "Bass"
+  case ukelele = "Ukelele"
 }
 
 extension Instrument: Equatable {}
 extension Instrument: CaseIterable {}
 extension Instrument: Identifiable { public var id: String { rawValue } }
-extension Instrument: CustomStringConvertible { public var description: String { rawValue} }
+extension Instrument: CustomStringConvertible { public var description: String { rawValue } }
+
+extension Instrument {
+  var image: ImageResource {
+    switch self {
+    case .acoustic:
+      return .acoustic
+    case .electric:
+      return .electric
+    case .bass:
+      return .bass
+    case .ukelele:
+      return .ukelele
+    }
+  }
+  var thumnailImage: ImageResource {
+    switch self {
+    case .acoustic:
+      return .acousticThumbnail
+    case .electric:
+      return .electricThumbnail
+    case .bass:
+      return .bassThumbnail
+    case .ukelele:
+      return .uekeleThumbnail
+    }
+  }
+}
 
 
 // MARK: - InstrumentTuning

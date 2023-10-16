@@ -3,14 +3,13 @@ import ComposableArchitecture
 
 struct AppReducer: Reducer {
   struct State: Equatable {
-    @BindingState var instrument = Instrument.guitar
+    @BindingState var instrument = Instrument.acoustic
     @BindingState var tuning = InstrumentTuning.eStandard
   }
   enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case play(Note)
   }
-  
   @Dependency(\.sound) var sound
   
   var body: some ReducerOf<Self> {
@@ -31,10 +30,18 @@ struct AppReducer: Reducer {
 }
 
 private extension AppReducer.State {
+  var navigationTitle: String {
+    "\(instrument.rawValue) Tuner"
+  }
   var notes: [Note] {
-    instrument == .bass
-    ? Array(tuning.notes.prefix(upTo: 4))
-    : tuning.notes
+    switch instrument {
+      //    case .electric:
+      //      Array(tuning.notes)
+    case .bass:
+      Array(tuning.notes.prefix(upTo: 4))
+    default:
+      Array(tuning.notes)
+    }
   }
 }
 
@@ -46,31 +53,47 @@ struct AppView: View {
   var body: some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       NavigationStack {
-        Form {
+        VStack {
+          TabView(selection: viewStore.$instrument) {
+            ForEach(Instrument.allCases) { instrument in
+              Image(instrument.image)
+                .resizable()
+                .scaledToFit()
+                .padding(8)
+                .clipShape(Circle())
+                .frame(maxWidth: .infinity, alignment: .center)
+                .tag(instrument)
+            }
+          }
+          .tabViewStyle(.page(indexDisplayMode: .never))
+          .frame(maxWidth: .infinity)
+          .frame(height: 200)
+          //.border(Color.green)
+          .padding()
+          .background(Color(.systemGray6).gradient)
+          
           Section {
-            Image(viewStore.instrument.rawValue)
-              .resizable()
-              .scaledToFit()
-              .frame(width: 175)
-              .padding()
-              .background(GroupBox { Color.clear })
-              .clipShape(Circle())
-              .frame(maxWidth: .infinity, alignment: .center)
-              .listRowBackground(Color.clear)
-              .padding(.top)
+            instruments
+          } header: {
+            Text("Instrument")
+              .font(.title2)
+              .fontWeight(.semibold)
+              .frame(maxWidth: .infinity, alignment: .leading)
           }
           Section {
-            Picker("Instrument", selection: viewStore.$instrument) {
-              ForEach(Instrument.allCases) {
-                Text($0.rawValue).tag($0)
-              }
-            }
             Picker("Tuning", selection: viewStore.$tuning) {
               ForEach(InstrumentTuning.allCases) {
                 Text($0.rawValue).tag($0)
               }
             }
+          } header: {
+            Text("Tuning")
+              .font(.title2)
+              .fontWeight(.semibold)
+              .frame(maxWidth: .infinity, alignment: .leading)
           }
+
+          
           Section {
             HStack {
               ForEach(viewStore.notes) { note in
@@ -85,10 +108,48 @@ struct AppView: View {
           }
           .buttonStyle(.plain)
           .listRowBackground(Color.clear)
+          
+          Spacer()
         }
         .listStyle(.inset)
-        .navigationTitle("\(viewStore.instrument.rawValue) Tuner")
+        .navigationTitle(viewStore.navigationTitle)
       }
+    }
+  }
+  
+  private var instruments: some View {
+    WithViewStore(store, observe: { $0 }) { viewStore in
+      ScrollView(.horizontal) {
+        HStack {
+          ForEach(Instrument.allCases) { instrument in
+            Button {
+              viewStore.send(.binding(.set(\.$instrument, instrument)))
+            } label: {
+              VStack {
+                Image(instrument.thumnailImage)
+                  .resizable()
+                  .scaledToFit()
+                  .frame(width: 75, height: 75)
+                //.padding()
+                  .background(Color(.systemGray5))
+                  .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                //.frame(maxWidth: .infinity, alignment: .center)
+                  .overlay {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                      .strokeBorder()
+                      .foregroundColor(.accentColor)
+                      .opacity(viewStore.instrument == instrument ? 1 : 0)
+                  }
+                
+                Text(instrument.description)
+              }
+              .tag(instrument.id)
+            }
+            .buttonStyle(.plain)
+          }
+        }
+      }
+      .padding(.horizontal)
     }
   }
 }
