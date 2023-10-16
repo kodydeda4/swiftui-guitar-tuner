@@ -1,51 +1,30 @@
-import Foundation
 import AVKit
 import AVFoundation
-import Dependencies
-
-struct SoundClient: DependencyKey {
-  var play: @Sendable (Note) async -> Void
-}
-
-extension DependencyValues {
-  var sound: SoundClient {
-    get { self[SoundClient.self] }
-    set { self[SoundClient.self] = newValue }
-  }
-}
-
-// MARK: - Implementations
-
-extension SoundClient {
-  static var liveValue = Self.live
-  //  static var previewValue = Self.preview
-  //  static var testValue = Self.test
-}
-
-
+import Foundation
 
 extension SoundClient {
   static var live: Self {
-    let midi = MidiConductor()
+    let conductor = SoundConductor()
     
     return Self(
       play: { note in
-        await midi.play(note.midi)
+        await conductor.play(note.midi)
       }
     )
   }
 }
 
+// MARK: - Private Implementation
+
 /// Play MIDI through a SoundFont.
-private actor MidiConductor {
+private actor SoundConductor {
   var soundfont = Bundle.main.url(forResource: "Guitar", withExtension: "sf2")!
-//  var soundfont =
   var volume = Float(0.5)
   var channel = UInt8(1)
   let audioEngine = AVAudioEngine()
   let unitSampler = AVAudioUnitSampler()
   
-  public func play(_ note: UInt8) {
+  func play(_ note: UInt8) {
     unitSampler.startNote(
       note,
       withVelocity: 80,

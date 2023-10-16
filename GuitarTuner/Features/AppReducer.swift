@@ -1,16 +1,10 @@
 import SwiftUI
-import SwiftUI
 import ComposableArchitecture
 
 struct AppReducer: Reducer {
   struct State: Equatable {
     @BindingState var instrument = Instrument.guitar
     @BindingState var tuning = InstrumentTuning.eStandard
-    var notes: [Note] {
-      instrument == .bass
-      ? Array(tuning.notes.prefix(upTo: 4))
-      : tuning.notes
-    }
   }
   enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
@@ -33,6 +27,14 @@ struct AppReducer: Reducer {
         }
       }
     }
+  }
+}
+
+private extension AppReducer.State {
+  var notes: [Note] {
+    instrument == .bass
+    ? Array(tuning.notes.prefix(upTo: 4))
+    : tuning.notes
   }
 }
 
