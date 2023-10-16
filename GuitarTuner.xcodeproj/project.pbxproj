@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		33C200D82ADDCC5B00EBC52A /* GuitarTunerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D72ADDCC5B00EBC52A /* GuitarTunerApp.swift */; };
-		33C200DA2ADDCC5B00EBC52A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D92ADDCC5B00EBC52A /* ContentView.swift */; };
+		33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D72ADDCC5B00EBC52A /* Main.swift */; };
+		33C200DA2ADDCC5B00EBC52A /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D92ADDCC5B00EBC52A /* AppView.swift */; };
 		33C200DC2ADDCC5D00EBC52A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33C200DB2ADDCC5D00EBC52A /* Assets.xcassets */; };
 		33C200DF2ADDCC5D00EBC52A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33C200DE2ADDCC5D00EBC52A /* Preview Assets.xcassets */; };
 		33C200E92ADDCC5D00EBC52A /* GuitarTunerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200E82ADDCC5D00EBC52A /* GuitarTunerTests.swift */; };
@@ -35,8 +35,8 @@
 
 /* Begin PBXFileReference section */
 		33C200D42ADDCC5B00EBC52A /* GuitarTuner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GuitarTuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		33C200D72ADDCC5B00EBC52A /* GuitarTunerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuitarTunerApp.swift; sourceTree = "<group>"; };
-		33C200D92ADDCC5B00EBC52A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		33C200D72ADDCC5B00EBC52A /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
+		33C200D92ADDCC5B00EBC52A /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
 		33C200DB2ADDCC5D00EBC52A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		33C200DE2ADDCC5D00EBC52A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		33C200E42ADDCC5D00EBC52A /* GuitarTunerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GuitarTunerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -94,8 +94,8 @@
 		33C200D62ADDCC5B00EBC52A /* GuitarTuner */ = {
 			isa = PBXGroup;
 			children = (
-				33C200D72ADDCC5B00EBC52A /* GuitarTunerApp.swift */,
-				33C200D92ADDCC5B00EBC52A /* ContentView.swift */,
+				33C200D72ADDCC5B00EBC52A /* Main.swift */,
+				33C200D92ADDCC5B00EBC52A /* AppView.swift */,
 				33C200DB2ADDCC5D00EBC52A /* Assets.xcassets */,
 				33C200DD2ADDCC5D00EBC52A /* Preview Content */,
 			);
@@ -257,8 +257,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				33C200DA2ADDCC5B00EBC52A /* ContentView.swift in Sources */,
-				33C200D82ADDCC5B00EBC52A /* GuitarTunerApp.swift in Sources */,
+				33C200DA2ADDCC5B00EBC52A /* AppView.swift in Sources */,
+				33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,7 +347,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -404,7 +404,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
