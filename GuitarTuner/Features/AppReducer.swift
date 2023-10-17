@@ -68,18 +68,18 @@ struct AppView: View {
           .tabViewStyle(.page(indexDisplayMode: .never))
           .frame(maxWidth: .infinity)
           .frame(height: 200)
-          //.border(Color.green)
           .padding()
           .background(Color(.systemGray6).gradient)
           
           Section {
-            instruments
+            InstrumentsView(store: store)
           } header: {
             Text("Instrument")
               .font(.title2)
               .fontWeight(.semibold)
               .frame(maxWidth: .infinity, alignment: .leading)
           }
+          
           Section {
             Picker("Tuning", selection: viewStore.$tuning) {
               ForEach(InstrumentTuning.allCases) {
@@ -116,40 +116,44 @@ struct AppView: View {
       }
     }
   }
+}
+
+private struct InstrumentsView: View {
+  let store: StoreOf<AppReducer>
   
-  private var instruments: some View {
+  var body: some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
-      ScrollView(.horizontal) {
-        HStack {
-          ForEach(Instrument.allCases) { instrument in
-            Button {
-              viewStore.send(.binding(.set(\.$instrument, instrument)))
-            } label: {
-              VStack {
-                Image(instrument.thumnailImage)
-                  .resizable()
-                  .scaledToFit()
-                  .frame(width: 75, height: 75)
-                //.padding()
-                  .background(Color(.systemGray5))
-                  .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                //.frame(maxWidth: .infinity, alignment: .center)
-                  .overlay {
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                      .strokeBorder()
-                      .foregroundColor(.accentColor)
-                      .opacity(viewStore.instrument == instrument ? 1 : 0)
-                  }
-                
-                Text(instrument.description)
-              }
-              .tag(instrument.id)
+      HStack {
+        ForEach(Instrument.allCases) { instrument in
+          Button {
+            viewStore.send(.binding(.set(\.$instrument, instrument)), animation: .spring())
+          } label: {
+            VStack {
+              Image(instrument.thumnailImage)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 75, height: 75)
+                .frame(maxWidth: .infinity)
+                .background(Color(.systemGray5))
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay {
+                  RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(lineWidth: 3)
+                    .foregroundColor(.accentColor)
+                    .opacity(viewStore.instrument == instrument ? 1 : 0)
+                }
+              
+              Text(instrument.description)
+                .font(.caption)
             }
-            .buttonStyle(.plain)
+            .frame(maxWidth: .infinity)
+            .tag(instrument.id)
           }
+          .buttonStyle(.plain)
         }
       }
-      .padding(.horizontal)
+      .tabViewStyle(.page(indexDisplayMode: .never))
+      .frame(maxWidth: .infinity)
     }
   }
 }
