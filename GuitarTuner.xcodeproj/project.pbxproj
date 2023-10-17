@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3301072B2ADEFE4300102264 /* View+navigationOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3301072A2ADEFE4300102264 /* View+navigationOverlay.swift */; };
+		3301072E2ADEFEBF00102264 /* RoundedRectangleButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3301072D2ADEFEBF00102264 /* RoundedRectangleButtonStyle.swift */; };
+		330107312ADF08BC00102264 /* FancyScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = 330107302ADF08BC00102264 /* FancyScrollView */; };
 		33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D72ADDCC5B00EBC52A /* Main.swift */; };
 		33C200DA2ADDCC5B00EBC52A /* AppReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D92ADDCC5B00EBC52A /* AppReducer.swift */; };
 		33C200DC2ADDCC5D00EBC52A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33C200DB2ADDCC5D00EBC52A /* Assets.xcassets */; };
@@ -30,6 +33,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3301072A2ADEFE4300102264 /* View+navigationOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+navigationOverlay.swift"; sourceTree = "<group>"; };
+		3301072D2ADEFEBF00102264 /* RoundedRectangleButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedRectangleButtonStyle.swift; sourceTree = "<group>"; };
 		33C200D42ADDCC5B00EBC52A /* GuitarTuner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GuitarTuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		33C200D72ADDCC5B00EBC52A /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		33C200D92ADDCC5B00EBC52A /* AppReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReducer.swift; sourceTree = "<group>"; };
@@ -48,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				330107312ADF08BC00102264 /* FancyScrollView in Frameworks */,
 				33C201072ADDCD6B00EBC52A /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -62,6 +68,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		330107282ADEFE2E00102264 /* SwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				3301072C2ADEFEB300102264 /* ButtonStyles */,
+				330107292ADEFE3700102264 /* ViewModifiers */,
+			);
+			path = SwiftUI;
+			sourceTree = "<group>";
+		};
+		330107292ADEFE3700102264 /* ViewModifiers */ = {
+			isa = PBXGroup;
+			children = (
+				3301072A2ADEFE4300102264 /* View+navigationOverlay.swift */,
+			);
+			path = ViewModifiers;
+			sourceTree = "<group>";
+		};
+		3301072C2ADEFEB300102264 /* ButtonStyles */ = {
+			isa = PBXGroup;
+			children = (
+				3301072D2ADEFEBF00102264 /* RoundedRectangleButtonStyle.swift */,
+			);
+			path = ButtonStyles;
+			sourceTree = "<group>";
+		};
 		33C200CB2ADDCC5B00EBC52A = {
 			isa = PBXGroup;
 			children = (
@@ -83,9 +114,10 @@
 		33C200D62ADDCC5B00EBC52A /* GuitarTuner */ = {
 			isa = PBXGroup;
 			children = (
-				33C201032ADDCD2300EBC52A /* Features */,
 				33C201022ADDCD1D00EBC52A /* Dependencies */,
+				33C201032ADDCD2300EBC52A /* Features */,
 				33C201012ADDCD1700EBC52A /* Resources */,
+				330107282ADEFE2E00102264 /* SwiftUI */,
 			);
 			path = GuitarTuner;
 			sourceTree = "<group>";
@@ -169,6 +201,7 @@
 			name = GuitarTuner;
 			packageProductDependencies = (
 				33C201062ADDCD6B00EBC52A /* ComposableArchitecture */,
+				330107302ADF08BC00102264 /* FancyScrollView */,
 			);
 			productName = GuitarTuner;
 			productReference = 33C200D42ADDCC5B00EBC52A /* GuitarTuner.app */;
@@ -222,6 +255,7 @@
 			mainGroup = 33C200CB2ADDCC5B00EBC52A;
 			packageReferences = (
 				33C201052ADDCD6B00EBC52A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				3301072F2ADF08BC00102264 /* XCRemoteSwiftPackageReference "FancyScrollView" */,
 			);
 			productRefGroup = 33C200D52ADDCC5B00EBC52A /* Products */;
 			projectDirPath = "";
@@ -258,11 +292,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3301072E2ADEFEBF00102264 /* RoundedRectangleButtonStyle.swift in Sources */,
 				33C2010B2ADDD0C900EBC52A /* Models.swift in Sources */,
 				33C201092ADDCE3C00EBC52A /* SoundClient.swift in Sources */,
 				33C2010F2ADDD55C00EBC52A /* SoundClient+live.swift in Sources */,
 				33C200DA2ADDCC5B00EBC52A /* AppReducer.swift in Sources */,
 				33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */,
+				3301072B2ADEFE4300102264 /* View+navigationOverlay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -535,6 +571,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		3301072F2ADF08BC00102264 /* XCRemoteSwiftPackageReference "FancyScrollView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nerdsupremacist/FancyScrollView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.4;
+			};
+		};
 		33C201052ADDCD6B00EBC52A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
@@ -546,6 +590,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		330107302ADF08BC00102264 /* FancyScrollView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3301072F2ADF08BC00102264 /* XCRemoteSwiftPackageReference "FancyScrollView" */;
+			productName = FancyScrollView;
+		};
 		33C201062ADDCD6B00EBC52A /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 33C201052ADDCD6B00EBC52A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
