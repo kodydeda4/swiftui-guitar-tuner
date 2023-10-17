@@ -31,7 +31,7 @@ struct AppReducer: Reducer {
 
 private extension AppReducer.State {
   var navigationTitle: String {
-    "\(instrument.rawValue) Tuner"
+    instrument.rawValue
   }
   var notes: [Note] {
     switch instrument {
@@ -71,14 +71,16 @@ struct AppView: View {
           .padding()
           .background(Color(.systemGray6).gradient)
           
-          Section {
-            InstrumentsView(store: store)
-          } header: {
+          VStack(alignment: .leading) {
             Text("Instrument")
               .font(.title2)
               .fontWeight(.semibold)
               .frame(maxWidth: .infinity, alignment: .leading)
+            
+            InstrumentsView(store: store)
           }
+          .padding(8)
+          
           
           Section {
             Picker("Tuning", selection: viewStore.$tuning) {
