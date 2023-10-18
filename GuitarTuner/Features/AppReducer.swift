@@ -5,6 +5,7 @@ struct AppReducer: Reducer {
   struct State: Equatable {
     @BindingState var instrument = Instrument.acoustic
     @BindingState var tuning: InstrumentTuning? = .eStandard
+    @BindingState var isSheetPresented = false
   }
   enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
@@ -54,32 +55,74 @@ struct AppView: View {
   var body: some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       NavigationStack {
-        List(selection: viewStore.$tuning) {
-          Header(store: store)
-          InstrumentsView(store: store)
-          TuningView(store: store)
+        VStack(spacing: 0) {
+          Image(viewStore.instrument.image)
+            .resizable()
+            .scaledToFit()
+            .padding(8)
+            .clipShape(Circle())
+            .frame(maxWidth: .infinity, alignment: .center)
+          
+          Spacer()
+          Divider()
+          
+          HStack {
+            ForEach(viewStore.notes) { note in
+              Button(action: { viewStore.send(.play(note)) }) {
+                Text(note.description.prefix(1))
+                  .frame(maxWidth: .infinity, maxHeight: .infinity)
+                  .background(.thinMaterial)
+              }
+              .buttonStyle(.plain)
+              .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+          }
+          .padding()
+          .background(.regularMaterial)
+          .frame(height: 75)
         }
+        .frame(maxHeight: .infinity)
+        .background(Color.accentColor.gradient)
         .navigationTitle(viewStore.navigationTitle)
-        .listStyle(.plain)
-        .toolbar {
-          EditButton()
+        .sheet(isPresented: viewStore.$isSheetPresented) {
+          SettingsSheet(store: store)
         }
-//        .navigationOverlay {
-//          HStack {
-//            ForEach(viewStore.notes) { note in
-//              Button(action: { viewStore.send(.play(note)) }) {
-//                GroupBox {
-//                  Text(note.description.prefix(1))
-//                    .frame(maxWidth: .infinity)
-//                }
-//              }
-//            }
-//          }
-//        }
+        .toolbar {
+          Button {
+            viewStore.send(.binding(.set(\.$isSheetPresented, true)))
+          } label: {
+            Image(systemName: "gear")
+          }
+        }
       }
     }
   }
 }
+
+private struct SettingsSheet: View {
+  let store: StoreOf<AppReducer>
+  
+  var body: some View {
+    WithViewStore(store, observe: { $0 }) { viewStore in
+      NavigationStack {
+        List(selection: viewStore.$tuning) {
+          Header(store: store)
+          InstrumentsView(store: store)
+          TuningView(store: store)
+          Spacer().frame(height: 120)
+        }
+        .navigationTitle("Edit Settings")
+        .listStyle(.plain)
+        .toolbar {
+          Button("Done") {
+            viewStore.send(.binding(.set(\.$isSheetPresented, false)))
+          }
+        }
+      }
+    }
+  }
+}
+
 
 private struct Header: View {
   let store: StoreOf<AppReducer>
