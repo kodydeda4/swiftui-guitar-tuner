@@ -4,7 +4,7 @@ import ComposableArchitecture
 struct AppReducer: Reducer {
   struct State: Equatable {
     @BindingState var instrument = Instrument.acoustic
-    @BindingState var tuning: InstrumentTuning? = .eStandard
+    @BindingState var tuning = InstrumentTuning.eStandard
     @BindingState var isSheetPresented = false
   }
   enum Action: BindableAction, Equatable {
@@ -35,8 +35,7 @@ private extension AppReducer.State {
     instrument.rawValue
   }
   var notes: [Note] {
-    guard let tuning else { return [] }
-    return switch instrument {
+    switch instrument {
       //    case .electric:
       //      Array(tuning.notes)
     case .bass:
@@ -105,7 +104,7 @@ private struct SettingsSheet: View {
   var body: some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       NavigationStack {
-        List(selection: viewStore.$tuning) {
+        List {
           Header(store: store)
           InstrumentsView(store: store)
           TuningView(store: store)
@@ -174,21 +173,20 @@ private struct TuningView: View {
   
   private func btn(_ tuning: InstrumentTuning) -> some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
+      let isSelected = viewStore.tuning == tuning
       Button {
-        viewStore.send(.binding(.set(\.$tuning, viewStore.tuning != tuning ? tuning : nil)))
+        viewStore.send(.binding(.set(\.$tuning, tuning)))
       } label: {
         HStack {
-          Image(systemName: viewStore.tuning == .some(tuning) ? "checkmark.circle.fill" : "circle")
-            .foregroundColor(viewStore.tuning == .some(tuning) ? .accentColor : .secondary)
-            .background {
-              Color.white.opacity(viewStore.tuning == .some(tuning) ? 1 : 0)
-            }
+          Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+            .foregroundColor(isSelected ? .accentColor : .secondary)
+            .background { Color.white.opacity(isSelected ? 1 : 0) }
             .clipShape(Circle())
             .overlay {
               Circle()
                 .strokeBorder()
                 .foregroundColor(.accentColor)
-                .opacity(viewStore.tuning == .some(tuning) ? 1 : 0)
+                .opacity(isSelected ? 1 : 0)
             }
           
           Text(tuning.description)
