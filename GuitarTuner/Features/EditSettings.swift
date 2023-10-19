@@ -1,45 +1,43 @@
 import SwiftUI
 import ComposableArchitecture
+import DependenciesAdditions
+import Tagged
 
 struct EditSettings: Reducer {
   struct State: Equatable {
-    @BindingState var instrument = Instrument.acoustic
+    @BindingState var instrument = Instrument.electric
     @BindingState var tuning = InstrumentTuning.eStandard
   }
+  
   enum Action: BindableAction, Equatable {
     case doneButtonTapped
-    case dismiss(State)
     case binding(BindingAction<State>)
   }
+  
   @Dependency(\.dismiss) var dismiss
+  @Dependency(\.userDefaults) var userDefaults
+
   var body: some ReducerOf<Self> {
     BindingReducer()
     Reduce { state, action in
       switch action {
-        
-      case .binding:
-        return .none
-        
-      case .dismiss:
-        return .none
       
       case .doneButtonTapped:
-        return .send(.dismiss(state))
+        return .run { [output = state.output] _ in
+          try? self.userDefaults.set(JSONEncoder().encode(output), forKey: UserDefaults.Dependency.Key.settings.rawValue)
+          await self.dismiss()
+        }
+        
+      default:
+        return .none
       }
     }
   }
 }
 
-private extension EditSettings.State {
-  var notes: [Note] {
-    switch instrument {
-      //    case .electric:
-      //      Array(tuning.notes)
-    case .bass:
-      Array(tuning.notes.prefix(upTo: 4))
-    default:
-      Array(tuning.notes)
-    }
+extension EditSettings.State {
+  var output: UserDefaults.Dependency.Settings {
+    .init(instrument: instrument, tuning: tuning)
   }
 }
 

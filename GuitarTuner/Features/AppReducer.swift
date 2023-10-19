@@ -1,24 +1,46 @@
 import SwiftUI
 import ComposableArchitecture
+import DependenciesAdditions
 
 // sound only works when connected to an external audio source.
+
 struct AppReducer: Reducer {
   struct State: Equatable {
-    var instrument = Instrument.acoustic
-    var tuning = InstrumentTuning.eStandard
+    var settings = UserDefaults.Dependency.Settings()
     @PresentationState var destination: Destination.State?
   }
+  
   enum Action: Equatable {
+    case task
+    case setSettings(UserDefaults.Dependency.Settings)
     case play(Note)
     case editSettingsButtonTapped
     case destination(PresentationAction<Destination.Action>)
   }
   
   @Dependency(\.sound) var sound
+  @Dependency(\.userDefaults) var userDefaults
   
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+        
+      case .task:
+        return .run { send in
+          await withTaskGroup(of: Void.self) { group in
+            group.addTask {
+              for await data in self.userDefaults.dataValues(forKey: UserDefaults.Dependency.Key.settings.rawValue) {
+                if let value = data.flatMap({ try? JSONDecoder().decode(UserDefaults.Dependency.Settings.self, from: $0) }) {
+                  await send(.setSettings(value))
+                }
+              }
+            }
+          }
+        }
+        
+      case let .setSettings(value):
+        state.settings = value
+        return .none
         
       case let .play(note):
         return .run { _ in
@@ -27,15 +49,10 @@ struct AppReducer: Reducer {
         
       case .editSettingsButtonTapped:
         state.destination = .editSettings(.init(
-          instrument: state.instrument,
-          tuning: state.tuning
+          instrument: state.settings.instrument,
+          tuning: state.settings.tuning
         ))
         return .none
-        
-      case let .destination(.presented(.editSettings(.dismiss(childState)))):
-        state.instrument = childState.instrument
-        state.tuning = childState.tuning
-        return .send(.destination(.dismiss))
         
       default:
         return .none
@@ -64,16 +81,16 @@ struct AppReducer: Reducer {
 
 private extension AppReducer.State {
   var navigationTitle: String {
-    instrument.rawValue
+    settings.instrument.rawValue
   }
   var notes: [Note] {
-    switch instrument {
+    switch settings.instrument {
       //    case .electric:
       //      Array(tuning.notes)
     case .bass:
-      Array(tuning.notes.prefix(upTo: 4))
+      Array(settings.tuning.notes.prefix(upTo: 4))
     default:
-      Array(tuning.notes)
+      Array(settings.tuning.notes)
     }
   }
 }
@@ -87,7 +104,7 @@ struct AppView: View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       NavigationStack {
         VStack(spacing: 0) {
-          Image(viewStore.instrument.image)
+          Image(viewStore.settings.instrument.image)
             .resizable()
             .scaledToFit()
             .padding(8)
@@ -121,6 +138,7 @@ struct AppView: View {
           action: AppReducer.Destination.Action.editSettings,
           content: EditSettingsSheet.init(store:)
         )
+        .task { await viewStore.send(.task).finish() }
         .toolbar {
           Button {
             viewStore.send(.editSettingsButtonTapped)

@@ -12,7 +12,7 @@ extension Note: Identifiable { public var id: UInt8 { midi } }
 
 // MARK: - Instrument
 
-public enum Instrument: String {
+public enum Instrument: String, Codable {
   case acoustic = "Acoustic"
   case electric = "Electric"
   case bass = "Bass"
@@ -54,7 +54,7 @@ extension Instrument {
 
 // MARK: - InstrumentTuning
 
-public enum InstrumentTuning: String {
+public enum InstrumentTuning: String, Codable {
   case eStandard = "E Standard"
   case dropD = "Drop D"
   case dadgad = "DADGAD"
@@ -98,5 +98,23 @@ public extension InstrumentTuning {
         Note(description: "D4", midi: 64)
       ]
     }
+  }
+}
+
+// MARK: - UserDefaults.Dependency.Settings
+
+extension UserDefaults.Dependency {
+  struct Settings: Equatable, Codable {
+    var instrument = Instrument.acoustic
+    var tuning = InstrumentTuning.eStandard
+  }
+}
+
+import Tagged
+
+extension UserDefaults.Dependency {
+  enum Key: String, Identifiable, Equatable {
+    var id: Self { self }
+    case settings = "Settings"
   }
 }
