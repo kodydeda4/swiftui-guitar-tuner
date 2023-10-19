@@ -24,7 +24,7 @@ struct EditSettings: Reducer {
       
       case .doneButtonTapped:
         return .run { [output = state.output] _ in
-          try? self.userDefaults.set(JSONEncoder().encode(output), forKey: UserDefaults.Dependency.Key.settings.rawValue)
+          try? self.userDefaults.set(output, forKey: .settings)
           await self.dismiss()
         }
         
@@ -40,6 +40,9 @@ extension EditSettings.State {
     .init(instrument: instrument, tuning: tuning)
   }
 }
+
+
+
 
 // MARK: - SwiftUI
 

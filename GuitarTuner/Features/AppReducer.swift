@@ -29,7 +29,7 @@ struct AppReducer: Reducer {
         return .run { send in
           await withTaskGroup(of: Void.self) { group in
             group.addTask {
-              for await data in self.userDefaults.dataValues(forKey: UserDefaults.Dependency.Key.settings.rawValue) {
+              for await data in self.userDefaults.dataValues(forKey: .settings) {
                 if let value = data.flatMap({ try? JSONDecoder().decode(UserDefaults.Dependency.Settings.self, from: $0) }) {
                   await send(.setSettings(value))
                 }

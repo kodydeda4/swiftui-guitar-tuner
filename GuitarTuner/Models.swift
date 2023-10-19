@@ -109,12 +109,3 @@ extension UserDefaults.Dependency {
     var tuning = InstrumentTuning.eStandard
   }
 }
-
-import Tagged
-
-extension UserDefaults.Dependency {
-  enum Key: String, Identifiable, Equatable {
-    var id: Self { self }
-    case settings = "Settings"
-  }
-}
