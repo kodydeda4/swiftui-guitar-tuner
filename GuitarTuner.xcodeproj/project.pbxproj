@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3301072B2ADEFE4300102264 /* View+navigationOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3301072A2ADEFE4300102264 /* View+navigationOverlay.swift */; };
 		3301072E2ADEFEBF00102264 /* RoundedRectangleButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3301072D2ADEFEBF00102264 /* RoundedRectangleButtonStyle.swift */; };
+		335276712AE1B2340088C222 /* EditSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335276702AE1B2340088C222 /* EditSettings.swift */; };
 		33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D72ADDCC5B00EBC52A /* Main.swift */; };
 		33C200DA2ADDCC5B00EBC52A /* AppReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D92ADDCC5B00EBC52A /* AppReducer.swift */; };
 		33C200DC2ADDCC5D00EBC52A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33C200DB2ADDCC5D00EBC52A /* Assets.xcassets */; };
@@ -34,6 +35,7 @@
 /* Begin PBXFileReference section */
 		3301072A2ADEFE4300102264 /* View+navigationOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+navigationOverlay.swift"; sourceTree = "<group>"; };
 		3301072D2ADEFEBF00102264 /* RoundedRectangleButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedRectangleButtonStyle.swift; sourceTree = "<group>"; };
+		335276702AE1B2340088C222 /* EditSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSettings.swift; sourceTree = "<group>"; };
 		33C200D42ADDCC5B00EBC52A /* GuitarTuner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GuitarTuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		33C200D72ADDCC5B00EBC52A /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		33C200D92ADDCC5B00EBC52A /* AppReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReducer.swift; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 			isa = PBXGroup;
 			children = (
 				33C200D92ADDCC5B00EBC52A /* AppReducer.swift */,
+				335276702AE1B2340088C222 /* EditSettings.swift */,
 				33C2010A2ADDD0C900EBC52A /* Models.swift */,
 			);
 			path = Features;
@@ -292,6 +295,7 @@
 				33C2010B2ADDD0C900EBC52A /* Models.swift in Sources */,
 				33C201092ADDCE3C00EBC52A /* SoundClient.swift in Sources */,
 				33C2010F2ADDD55C00EBC52A /* SoundClient+live.swift in Sources */,
+				335276712AE1B2340088C222 /* EditSettings.swift in Sources */,
 				33C200DA2ADDCC5B00EBC52A /* AppReducer.swift in Sources */,
 				33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */,
 				3301072B2ADEFE4300102264 /* View+navigationOverlay.swift in Sources */,
