@@ -11,6 +11,7 @@ struct AppReducer: Reducer {
     case binding(BindingAction<State>)
     case play(Note)
   }
+  
   @Dependency(\.sound) var sound
   
   var body: some ReducerOf<Self> {
@@ -108,7 +109,6 @@ private struct SettingsSheet: View {
           Header(store: store)
           InstrumentsView(store: store)
           TuningView(store: store)
-          Spacer().frame(height: 120)
         }
         .navigationTitle("Edit Settings")
         .listStyle(.plain)
@@ -191,6 +191,7 @@ private struct TuningView: View {
           
           Text(tuning.description)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
       .buttonStyle(.plain)
     }
@@ -250,7 +251,7 @@ private struct InstrumentsView: View {
 
 #Preview {
   AppView(store: Store(
-    initialState: AppReducer.State(),
+    initialState: AppReducer.State(isSheetPresented: true),
     reducer: AppReducer.init
   ))
 }

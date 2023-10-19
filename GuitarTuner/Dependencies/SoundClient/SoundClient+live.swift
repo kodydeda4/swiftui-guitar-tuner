@@ -17,7 +17,7 @@ extension SoundClient {
 // MARK: - Private Implementation
 
 /// Play MIDI through a SoundFont.
-private actor SoundConductor {
+private final actor SoundConductor {
   var soundfont = Bundle.main.url(forResource: "Guitar", withExtension: "sf2")!
   var volume = Float(0.5)
   var channel = UInt8(1)
@@ -33,23 +33,22 @@ private actor SoundConductor {
   }
   
   init() {
-    // AudioEngine
-    audioEngine.mainMixerNode.volume = volume
-    audioEngine.attach(unitSampler)
-    audioEngine.connect(
-      unitSampler,
-      to: audioEngine.mainMixerNode,
-      format: nil
-    )
-    
-    // UnitSampler
-    if let _ = try? audioEngine.start() {
-      try? unitSampler.loadSoundBankInstrument(
+    do {
+      // AudioEngine
+      audioEngine.mainMixerNode.volume = volume
+      audioEngine.attach(unitSampler)
+      audioEngine.connect(unitSampler, to: audioEngine.mainMixerNode, format: nil)
+      
+      // UnitSampler
+      try audioEngine.start()
+      try unitSampler.loadSoundBankInstrument(
         at: soundfont,
         program: 0,
         bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
         bankLSB: UInt8(kAUSampler_DefaultBankLSB)
       )
+    } catch {
+      print(error)
     }
   }
 }

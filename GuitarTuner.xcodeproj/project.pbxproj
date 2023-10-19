@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		3301072B2ADEFE4300102264 /* View+navigationOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3301072A2ADEFE4300102264 /* View+navigationOverlay.swift */; };
 		3301072E2ADEFEBF00102264 /* RoundedRectangleButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3301072D2ADEFEBF00102264 /* RoundedRectangleButtonStyle.swift */; };
-		330107312ADF08BC00102264 /* FancyScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = 330107302ADF08BC00102264 /* FancyScrollView */; };
 		33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D72ADDCC5B00EBC52A /* Main.swift */; };
 		33C200DA2ADDCC5B00EBC52A /* AppReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D92ADDCC5B00EBC52A /* AppReducer.swift */; };
 		33C200DC2ADDCC5D00EBC52A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33C200DB2ADDCC5D00EBC52A /* Assets.xcassets */; };
@@ -53,7 +52,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				330107312ADF08BC00102264 /* FancyScrollView in Frameworks */,
 				33C201072ADDCD6B00EBC52A /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -201,7 +199,6 @@
 			name = GuitarTuner;
 			packageProductDependencies = (
 				33C201062ADDCD6B00EBC52A /* ComposableArchitecture */,
-				330107302ADF08BC00102264 /* FancyScrollView */,
 			);
 			productName = GuitarTuner;
 			productReference = 33C200D42ADDCC5B00EBC52A /* GuitarTuner.app */;
@@ -255,7 +252,6 @@
 			mainGroup = 33C200CB2ADDCC5B00EBC52A;
 			packageReferences = (
 				33C201052ADDCD6B00EBC52A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
-				3301072F2ADF08BC00102264 /* XCRemoteSwiftPackageReference "FancyScrollView" */,
 			);
 			productRefGroup = 33C200D52ADDCC5B00EBC52A /* Products */;
 			projectDirPath = "";
@@ -571,14 +567,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		3301072F2ADF08BC00102264 /* XCRemoteSwiftPackageReference "FancyScrollView" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/nerdsupremacist/FancyScrollView";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.4;
-			};
-		};
 		33C201052ADDCD6B00EBC52A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
@@ -590,11 +578,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		330107302ADF08BC00102264 /* FancyScrollView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3301072F2ADF08BC00102264 /* XCRemoteSwiftPackageReference "FancyScrollView" */;
-			productName = FancyScrollView;
-		};
 		33C201062ADDCD6B00EBC52A /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 33C201052ADDCD6B00EBC52A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
