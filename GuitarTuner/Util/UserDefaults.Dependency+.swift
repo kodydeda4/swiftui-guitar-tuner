@@ -8,8 +8,8 @@ extension UserDefaults.Dependency {
     case settings = "Settings"
   }
   
-  func set<T>(_ value: T, forKey key: Key) throws where T: Codable {
-    self.set(try JSONEncoder().encode(value), forKey: key.rawValue)
+  func set(_ data: Data, forKey key: Key) throws {
+    self.set(data, forKey: key.rawValue)
   }
   func dataValues(forKey key: Key) -> AsyncStream<Data?> {
     self.dataValues(forKey: key.rawValue)

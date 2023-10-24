@@ -5,44 +5,54 @@ import Tagged
 
 struct EditSettings: Reducer {
   struct State: Equatable {
-    @BindingState var instrument = Instrument.electric
-    @BindingState var tuning = InstrumentTuning.eStandard
+    var instrument = Instrument.electric
+    var tuning = InstrumentTuning.eStandard
   }
   
-  enum Action: BindableAction, Equatable {
+  enum Action: Equatable {
+    case setInstrument(Instrument)
+    case setTuning(InstrumentTuning)
     case doneButtonTapped
-    case binding(BindingAction<State>)
   }
   
   @Dependency(\.dismiss) var dismiss
   @Dependency(\.userDefaults) var userDefaults
+  @Dependency(\.sound) var sound
+  @Dependency(\.encode) var encode
 
   var body: some ReducerOf<Self> {
-    BindingReducer()
     Reduce { state, action in
       switch action {
+        
+      case let .setInstrument(value):
+        state.instrument = value
+        return .run { _ in
+          await self.sound.setInstrument(value)
+        }
+      
+      case let .setTuning(value):
+        state.tuning = value
+        return .none
       
       case .doneButtonTapped:
-        return .run { [output = state.output] _ in
-          try? self.userDefaults.set(output, forKey: .settings)
+        let output = UserDefaults.Dependency.Settings.init(from: state)
+        return .run { _ in
+          try? userDefaults.set(encode(output), forKey: .settings)
           await self.dismiss()
         }
-        
-      default:
-        return .none
       }
     }
   }
 }
 
-extension EditSettings.State {
-  var output: UserDefaults.Dependency.Settings {
-    .init(instrument: instrument, tuning: tuning)
+private extension UserDefaults.Dependency.Settings {
+  init(from state: EditSettings.State) {
+    self = Self(
+      instrument: state.instrument,
+      tuning: state.tuning
+    )
   }
 }
-
-
-
 
 // MARK: - SwiftUI
 
@@ -60,9 +70,17 @@ struct EditSettingsSheet: View {
         .navigationTitle("Edit Settings")
         .listStyle(.plain)
         .toolbar {
+          ToolbarItem(placement: .primaryAction) {
+            Button("Done") {
+              viewStore.send(.doneButtonTapped)
+            }
+          }
+        }
+        .navigationOverlay {
           Button("Done") {
             viewStore.send(.doneButtonTapped)
           }
+          .buttonStyle(RoundedRectangleButtonStyle())
         }
       }
     }
@@ -75,7 +93,10 @@ private struct Header: View {
   var body: some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       Section {
-        TabView(selection: viewStore.$instrument) {
+        TabView(selection: viewStore.binding(
+          get: \.instrument,
+          send: { .setInstrument($0) }
+        )) {
           ForEach(Instrument.allCases) { instrument in
             Image(instrument.image)
               .resizable()
@@ -121,7 +142,7 @@ private struct TuningView: View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       let isSelected = viewStore.tuning == tuning
       Button {
-        viewStore.send(.binding(.set(\.$tuning, tuning)))
+        viewStore.send(.setTuning(tuning))
       } label: {
         HStack {
           Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
@@ -138,8 +159,9 @@ private struct TuningView: View {
           Text(tuning.description)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .background { Color.pink.opacity(0.000001) }
       }
-      .buttonStyle(.plain)
+      //.buttonStyle(.link)
     }
   }
 }
@@ -153,7 +175,7 @@ private struct InstrumentsView: View {
         HStack {
           ForEach(Instrument.allCases) { instrument in
             Button {
-              viewStore.send(.binding(.set(\.$instrument, instrument)), animation: .spring())
+              viewStore.send(.setInstrument(instrument), animation: .spring())
             } label: {
               VStack {
                 Image(instrument.thumnailImage)
@@ -196,8 +218,10 @@ private struct InstrumentsView: View {
 // MARK: - SwiftUI Previews
 
 #Preview {
-  EditSettingsSheet(store: Store(
-    initialState: EditSettings.State(),
-    reducer: EditSettings.init
-  ))
+  Text("Hello World").sheet(isPresented: .constant(true)) {
+    EditSettingsSheet(store: Store(
+      initialState: EditSettings.State(),
+      reducer: EditSettings.init
+    ))
+  }
 }

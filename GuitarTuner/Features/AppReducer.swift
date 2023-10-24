@@ -20,6 +20,7 @@ struct AppReducer: Reducer {
   
   @Dependency(\.sound) var sound
   @Dependency(\.userDefaults) var userDefaults
+  @Dependency(\.decode) var decode
   
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -29,8 +30,8 @@ struct AppReducer: Reducer {
         return .run { send in
           await withTaskGroup(of: Void.self) { group in
             group.addTask {
-              for await data in self.userDefaults.dataValues(forKey: .settings) {
-                if let value = data.flatMap({ try? JSONDecoder().decode(UserDefaults.Dependency.Settings.self, from: $0) }) {
+              for await data in userDefaults.dataValues(forKey: .settings) {
+                if let value = data.flatMap({ try? decode(UserDefaults.Dependency.Settings.self, from: $0) }) {
                   await send(.setSettings(value))
                 }
               }

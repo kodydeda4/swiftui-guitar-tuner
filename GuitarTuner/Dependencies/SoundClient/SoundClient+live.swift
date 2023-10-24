@@ -2,13 +2,16 @@ import AVKit
 import AVFoundation
 import Foundation
 
-extension SoundClient {
+extension SoundFontClient {
   static var live: Self {
     let conductor = SoundConductor()
     
     return Self(
       play: { note in
         await conductor.play(note.midi)
+      },
+      setInstrument: {
+        await conductor.setInstrument($0)
       }
     )
   }
@@ -16,9 +19,24 @@ extension SoundClient {
 
 // MARK: - Private Implementation
 
+extension Instrument {
+  var soundfontURL: URL {
+    switch self {
+    case .electric:
+      Bundle.main.url(forResource: "Electric", withExtension: "sf2")!
+    case .acoustic:
+      Bundle.main.url(forResource: "Acoustic", withExtension: "sf2")!
+    case .bass:
+      Bundle.main.url(forResource: "Bass", withExtension: "sf2")!
+    case .ukelele:
+      Bundle.main.url(forResource: "Ukelele", withExtension: "sf2")!
+    }
+  }
+}
+
 /// Play MIDI through a SoundFont.
 private final actor SoundConductor {
-  var soundfont = Bundle.main.url(forResource: "Guitar", withExtension: "sf2")!
+  var instrument = Instrument.electric
   var volume = Float(0.5)
   var channel = UInt8(1)
   let audioEngine = AVAudioEngine()
@@ -32,6 +50,20 @@ private final actor SoundConductor {
     )
   }
   
+  func setInstrument(_ newValue: Instrument) {
+    do {
+      self.instrument = newValue
+      try unitSampler.loadSoundBankInstrument(
+        at: newValue.soundfontURL,
+        program: 0,
+        bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
+        bankLSB: UInt8(kAUSampler_DefaultBankLSB)
+      )
+    } catch {
+      print(error)
+    }
+  }
+  
   init() {
     do {
       // AudioEngine
@@ -42,7 +74,7 @@ private final actor SoundConductor {
       // UnitSampler
       try audioEngine.start()
       try unitSampler.loadSoundBankInstrument(
-        at: soundfont,
+        at: instrument.soundfontURL,
         program: 0,
         bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
         bankLSB: UInt8(kAUSampler_DefaultBankLSB)
