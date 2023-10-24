@@ -143,7 +143,6 @@
 			isa = PBXGroup;
 			children = (
 				3323F6D92AE1CB8A00C715B1 /* Util */,
-				33C2010A2ADDD0C900EBC52A /* Models.swift */,
 				33C201022ADDCD1D00EBC52A /* Dependencies */,
 				33C201032ADDCD2300EBC52A /* Features */,
 				33C201012ADDCD1700EBC52A /* Resources */,
@@ -210,10 +209,19 @@
 		33C201102ADDD55E00EBC52A /* SoundClient */ = {
 			isa = PBXGroup;
 			children = (
+				33D48A0E2AE74B1E000D66C9 /* _Models */,
 				33C201082ADDCE3C00EBC52A /* SoundFontClient.swift */,
 				33C2010E2ADDD55C00EBC52A /* SoundClient+live.swift */,
 			);
 			path = SoundClient;
+			sourceTree = "<group>";
+		};
+		33D48A0E2AE74B1E000D66C9 /* _Models */ = {
+			isa = PBXGroup;
+			children = (
+				33C2010A2ADDD0C900EBC52A /* Models.swift */,
+			);
+			path = _Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
