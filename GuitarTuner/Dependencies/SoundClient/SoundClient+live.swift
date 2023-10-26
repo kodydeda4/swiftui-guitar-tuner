@@ -4,7 +4,7 @@ import Foundation
 
 extension SoundClient {
   static var live: Self {
-    let conductor = SoundConductor()
+    let conductor = SoundConductor(instrument: .electric)
     
     return Self(
       play: { await conductor.play($0.midi) },
@@ -19,59 +19,43 @@ extension SoundClient {
 private extension SoundClient {
   /// Play MIDI through a SoundFont.
   private final actor SoundConductor {
-    var instrument = Instrument.electric
-    var volume = Float(0.5)
-    var channel = UInt8(1)
+    let volume = Float(0.5)
+    let channel = UInt8(1)
+    let velocity = UInt8(80)
     let audioEngine = AVAudioEngine()
     let unitSampler = AVAudioUnitSampler()
     
     func play(_ note: UInt8) {
-      unitSampler.startNote(
-        note,
-        withVelocity: 80,
-        onChannel: channel
-      )
+      unitSampler.startNote(note, withVelocity: velocity, onChannel: channel)
     }
     
     func stop(_ note: UInt8) {
-      unitSampler.stopNote(
-        note,
-        onChannel: channel
-      )
+      unitSampler.stopNote(note, onChannel: channel)
     }
     
     func setInstrument(_ newValue: Instrument) {
-      do {
-        self.instrument = newValue
-        try unitSampler.loadSoundBankInstrument(
-          at: newValue.soundfontURL,
-          program: 0,
-          bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
-          bankLSB: UInt8(kAUSampler_DefaultBankLSB)
-        )
-      } catch {
-        print(error)
-      }
+      try! unitSampler.loadSoundBankInstrument(
+        at: newValue.soundfontURL,
+        program: 0,
+        bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
+        bankLSB: UInt8(kAUSampler_DefaultBankLSB)
+      )
     }
     
-    init() {
-      do {
-        // AudioEngine
-        audioEngine.mainMixerNode.volume = volume
-        audioEngine.attach(unitSampler)
-        audioEngine.connect(unitSampler, to: audioEngine.mainMixerNode, format: nil)
-        
-        // UnitSampler
-        try audioEngine.start()
-        try unitSampler.loadSoundBankInstrument(
-          at: instrument.soundfontURL,
-          program: 0,
-          bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
-          bankLSB: UInt8(kAUSampler_DefaultBankLSB)
-        )
-      } catch {
-        print(error)
-      }
+    init(instrument: Instrument) {
+      // AudioEngine
+      audioEngine.mainMixerNode.volume = volume
+      audioEngine.attach(unitSampler)
+      audioEngine.connect(unitSampler, to: audioEngine.mainMixerNode, format: nil)
+      try! audioEngine.start()
+      
+      // UnitSampler
+      try! unitSampler.loadSoundBankInstrument(
+        at: instrument.soundfontURL,
+        program: 0,
+        bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
+        bankLSB: UInt8(kAUSampler_DefaultBankLSB)
+      )
     }
   }
 }
