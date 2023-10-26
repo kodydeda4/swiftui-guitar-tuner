@@ -7,11 +7,11 @@ import DependenciesAdditions
 
 struct AppReducer: Reducer {
   struct State: Equatable {
-    var settings = UserDefaults.Dependency.Settings()
+    var instrument = SoundClient.Instrument.electric
+    var tuning = SoundClient.InstrumentTuning.eStandard
     var inFlight: SoundClient.Note?
     var isPlayAllInFlight = false
     @BindingState var isRingEnabled = false
-    @PresentationState var destination: EditSettings.State?
   }
   
   enum Action: Equatable {
@@ -20,11 +20,12 @@ struct AppReducer: Reducer {
     case play(SoundClient.Note)
     case stop(SoundClient.Note)
     case didCompletePlayAll
-    case destination(PresentationAction<EditSettings.Action>)
     
     enum View: BindableAction, Equatable {
       case task
-      case editSettingsButtonTapped
+      case setInstrument(SoundClient.Instrument)
+      case setTuning(SoundClient.InstrumentTuning)
+      
       case noteButtonTapped(SoundClient.Note)
       case playAllButtonTapped
       case stopButtonTapped
@@ -35,13 +36,14 @@ struct AppReducer: Reducer {
   @Dependency(\.sound) var sound
   @Dependency(\.continuousClock) var clock
   @Dependency(\.userDefaults) var userDefaults
+  @Dependency(\.encode) var encode
   @Dependency(\.decode) var decode
   
   var body: some ReducerOf<Self> {
     BindingReducer(action: /Action.view)
     Reduce { state, action in
       switch action {
-      
+        
       case let .view(action):
         switch action {
           
@@ -59,13 +61,6 @@ struct AppReducer: Reducer {
               }
             }
           }
-          
-        case .editSettingsButtonTapped:
-          state.destination = .init(
-            instrument: state.settings.instrument,
-            tuning: state.settings.tuning
-          )
-          return .none
           
         case .playAllButtonTapped:
           guard !state.isPlayAllInFlight else { return .none }
@@ -113,6 +108,21 @@ struct AppReducer: Reducer {
             }
           }
           
+        case let .setInstrument(value):
+          state.instrument = value
+          let output = UserDefaults.Dependency.Settings.init(from: state)
+          return .run { _ in
+            await self.sound.setInstrument(value)
+            try? userDefaults.set(encode(output), forKey: .settings)
+          }
+          
+        case let .setTuning(value):
+          state.tuning = value
+          let output = UserDefaults.Dependency.Settings.init(from: state)
+          return .run { _ in
+            try? userDefaults.set(encode(output), forKey: .settings)
+          }
+          
         case .binding(.set(\.$isRingEnabled, false)):
           guard let inFlight = state.inFlight else { return .none }
           return .run { send in
@@ -125,7 +135,8 @@ struct AppReducer: Reducer {
         }
         
       case let .setSettings(value):
-        state.settings = value
+        state.instrument = value.instrument
+        state.tuning = value.tuning
         return .none
         
       case let .play(note):
@@ -140,27 +151,21 @@ struct AppReducer: Reducer {
         state.isPlayAllInFlight = false
         return .none
         
-      case .destination:
-        return .none
-        
       }
-    }
-    .ifLet(\.$destination, action: /Action.destination) {
-      EditSettings()
     }
   }
 }
 
 private extension AppReducer.State {
   var navigationTitle: String {
-    settings.instrument.rawValue
+    instrument.rawValue
   }
   var notes: [SoundClient.Note] {
-    switch settings.instrument {
+    switch instrument {
     case .bass:
-      Array(settings.tuning.notes.prefix(upTo: 4))
+      Array(tuning.notes.prefix(upTo: 4))
     default:
-      Array(settings.tuning.notes)
+      Array(tuning.notes)
     }
   }
   func isNoteButtonDisabled(_ note: SoundClient.Note) -> Bool {
@@ -175,6 +180,15 @@ private extension AppReducer.State {
   }
 }
 
+private extension UserDefaults.Dependency.Settings {
+  init(from state: AppReducer.State) {
+    self = Self(
+      instrument: state.instrument,
+      tuning: state.tuning
+    )
+  }
+}
+
 // MARK: - SwiftUI
 
 struct AppView: View {
@@ -183,78 +197,200 @@ struct AppView: View {
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       NavigationStack {
-        VStack(spacing: 0) {
-          Image(viewStore.settings.instrument.imageLarge)
-            .resizable()
-            .scaledToFit()
-            .padding(8)
-            .clipShape(Circle())
-            .frame(maxWidth: .infinity, alignment: .center)
+        List {
+          Header(store: store)
+          InstrumentsView(store: store)
+          TuningView(store: store)
+          RingToggle(store: store)
+          TuningButtons(store: store)
           
-          Spacer()
-          Divider()
+          Button("Play All") {
+            viewStore.send(.playAllButtonTapped)
+          }
+          .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .green))
+          .disabled(viewStore.isPlayAllButtonDisabled)
           
-          VStack {
-            VStack(alignment: .leading) {
-              Toggle(isOn: viewStore.$isRingEnabled) {
-                Text("🔁 Ring")
-                  .font(.title2)
+          Button("Stop") {
+            viewStore.send(.stopButtonTapped)
+          }
+          .buttonStyle(RoundedRectangleButtonStyle())
+          .disabled(viewStore.isStopButtonDisabled)
+        }
+        .navigationTitle(viewStore.navigationTitle)
+        .listStyle(.plain)
+      }
+      .task { await viewStore.send(.task).finish() }
+    }
+  }
+}
+
+private struct Header: View {
+  let store: StoreOf<AppReducer>
+  
+  var body: some View {
+    WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
+      Section {
+        TabView(selection: viewStore.binding(
+          get: \.instrument,
+          send: { .setInstrument($0) }
+        )) {
+          ForEach(SoundClient.Instrument.allCases) { instrument in
+            Image(instrument.imageLarge)
+              .resizable()
+              .scaledToFit()
+              .padding(8)
+              .clipShape(Circle())
+              .frame(maxWidth: .infinity, alignment: .center)
+              .tag(instrument)
+          }
+        }
+        .tabViewStyle(.page(indexDisplayMode: .never))
+        .frame(maxWidth: .infinity)
+        .frame(height: 200)
+      }
+      .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+      .background(Color.accentColor.gradient)
+      .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+      .padding(.horizontal)
+      .listRowSeparator(.hidden)
+    }
+  }
+}
+
+private struct InstrumentsView: View {
+  let store: StoreOf<AppReducer>
+  
+  var body: some View {
+    WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
+      Section {
+        HStack {
+          ForEach(SoundClient.Instrument.allCases) { instrument in
+            Button {
+              viewStore.send(.setInstrument(instrument), animation: .spring())
+            } label: {
+              VStack {
+                Image(instrument.imageSmall)
+                  .resizable()
+                  .scaledToFit()
+                  .frame(width: 75, height: 75)
+                  .frame(maxWidth: .infinity)
+                  .background(.thinMaterial)
+                  .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                  .overlay {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                      .strokeBorder(lineWidth: 3)
+                      .foregroundColor(.accentColor)
+                      .opacity(viewStore.instrument == instrument ? 1 : 0)
+                  }
+                
+                Text(instrument.description)
+                  .font(.caption)
+                  .foregroundColor(viewStore.instrument == instrument ? .primary : .secondary)
                   .fontWeight(.semibold)
               }
-              Text("Allow the note to ring until you tell it stop.")
-                .foregroundStyle(.secondary)
+              .frame(maxWidth: .infinity)
+              .tag(instrument.id)
             }
-            Divider()
-              .padding(.vertical, 8)
-            
-            HStack {
-              ForEach(viewStore.notes) { note in
-                Button(action: { viewStore.send(.noteButtonTapped(note)) }) {
-                  Text(note.description.prefix(1))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(viewStore.inFlight == note ? Color.green : Color.white)
-                }
-                .buttonStyle(.plain)
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .disabled(viewStore.state.isNoteButtonDisabled(note))
-              }
-            }
-            .frame(height: 50)
-            .padding(.bottom)
-            
-            Button("Play All") {
-              viewStore.send(.playAllButtonTapped)
-            }
-            .buttonStyle(RoundedRectangleButtonStyle(
-              backgroundColor: .green
-            ))
-            .disabled(viewStore.isPlayAllButtonDisabled)
-            
-            Button("Stop") {
-              viewStore.send(.stopButtonTapped)
-            }
-            .buttonStyle(RoundedRectangleButtonStyle())
-            .disabled(viewStore.isStopButtonDisabled)
+            .buttonStyle(.plain)
           }
-          .padding()
-          .background(.regularMaterial)
         }
-        .frame(maxHeight: .infinity)
-        .background(Color.accentColor.gradient)
-        .navigationTitle(viewStore.navigationTitle)
-        .sheet(
-          store: store.scope(state: \.$destination, action: AppReducer.Action.destination),
-          content: EditSettingsSheet.init(store:)
-        )
-        .task { await viewStore.send(.task).finish() }
-        .toolbar {
-          Button {
-            viewStore.send(.editSettingsButtonTapped)
-          } label: {
-            Image(systemName: "gear")
+        .frame(maxWidth: .infinity)
+      } header: {
+        Text("Instrument")
+          .font(.title2)
+          .bold()
+          .foregroundStyle(.primary)
+      }
+      .listRowSeparator(.hidden, edges: .bottom)
+    }
+  }
+}
+
+private struct TuningView: View {
+  let store: StoreOf<AppReducer>
+  
+  var body: some View {
+    WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
+      Section {
+        ForEach(SoundClient.InstrumentTuning.allCases) { tuning in
+          btn(tuning)
+        }
+      } header: {
+        Text("Tuning")
+          .font(.title2)
+          .bold()
+          .foregroundStyle(.primary)
+      }
+    }
+  }
+  
+  private func btn(_ tuning: SoundClient.InstrumentTuning) -> some View {
+    WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
+      let isSelected = viewStore.tuning == tuning
+      Button {
+        viewStore.send(.setTuning(tuning))
+      } label: {
+        HStack {
+          Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+            .foregroundColor(isSelected ? .accentColor : .secondary)
+            .background { Color.white.opacity(isSelected ? 1 : 0) }
+            .clipShape(Circle())
+            .overlay {
+              Circle()
+                .strokeBorder()
+                .foregroundColor(.accentColor)
+                .opacity(isSelected ? 1 : 0)
+            }
+          
+          Text(tuning.description)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background { Color.pink.opacity(0.000001) }
+      }
+    }
+  }
+}
+
+private struct RingToggle: View {
+  let store: StoreOf<AppReducer>
+  
+  var body: some View {
+    WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
+      VStack(alignment: .leading) {
+        Toggle(isOn: viewStore.$isRingEnabled) {
+          Text("🔁 Ring")
+            .font(.title2)
+            .fontWeight(.semibold)
+        }
+        Text("Allow the note to ring until you tell it stop.")
+          .foregroundStyle(.secondary)
+      }
+    }
+  }
+}
+
+private struct TuningButtons: View {
+  let store: StoreOf<AppReducer>
+  
+  var body: some View {
+    WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
+      VStack {
+        HStack {
+          ForEach(viewStore.notes) { note in
+            Button {
+              viewStore.send(.noteButtonTapped(note))
+            } label: {
+              Text(note.description.prefix(1))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(viewStore.inFlight == note ? Color.green : Color(.systemGroupedBackground))
+            }
+            .buttonStyle(.plain)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .disabled(viewStore.state.isNoteButtonDisabled(note))
           }
         }
       }
+      .frame(height: 50)
     }
   }
 }
@@ -263,11 +399,7 @@ struct AppView: View {
 
 #Preview {
   AppView(store: Store(
-    initialState: AppReducer.State(
-      settings: .init(
-        instrument: .electric
-      )
-    ),
+    initialState: AppReducer.State(instrument: .electric),
     reducer: AppReducer.init
   ))
 }
