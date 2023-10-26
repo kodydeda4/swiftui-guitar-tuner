@@ -7,22 +7,28 @@ import DependenciesAdditions
 struct AppReducer: Reducer {
   struct State: Equatable {
     var settings = UserDefaults.Dependency.Settings()
+    var inFlight: SoundClient.Note?
     @PresentationState var destination: EditSettings.State?
   }
   
   enum Action: Equatable {
     case view(View)
     case setSettings(UserDefaults.Dependency.Settings)
+    case play(SoundClient.Note)
+    case stop(SoundClient.Note)
     case destination(PresentationAction<EditSettings.Action>)
     
     enum View: Equatable {
       case task
       case editSettingsButtonTapped
-      case play(SoundClient.Note)
+      case noteTapped(SoundClient.Note)
+      case playAllButtonTapped
+      case stopButtonTapped
     }
   }
   
   @Dependency(\.sound) var sound
+  @Dependency(\.continuousClock) var clock
   @Dependency(\.userDefaults) var userDefaults
   @Dependency(\.decode) var decode
   
@@ -38,7 +44,9 @@ struct AppReducer: Reducer {
             await withTaskGroup(of: Void.self) { group in
               group.addTask {
                 for await data in userDefaults.dataValues(forKey: .settings) {
-                  if let value = data.flatMap({ try? decode(UserDefaults.Dependency.Settings.self, from: $0) }) {
+                  if let value = data.flatMap({
+                    try? decode(UserDefaults.Dependency.Settings.self, from: $0)
+                  }) {
                     await send(.setSettings(value))
                   }
                 }
@@ -53,13 +61,51 @@ struct AppReducer: Reducer {
           )
           return .none
           
-        case let .play(note):
-          return .run { _ in await sound.play(note) }
+        case .playAllButtonTapped:
+          return .run { [notes = state.notes] send in
+            // play all the notes at a normal speed
+            for note in notes {
+              await send(.play(note))
+              try await clock.sleep(for: .seconds(1))
+              await send(.stop(note))
+            }
+            // play all the notes again faster except the last one
+            for note in notes.dropLast() {
+              await send(.play(note))
+              try await clock.sleep(for: .seconds(0.1))
+              await send(.stop(note))
+            }
+            // play the last note and let it ring
+            if let last = notes.last {
+              await send(.play(last))
+              try await clock.sleep(for: .seconds(1))
+              await send(.stop(last))
+            }
+          }
+          
+        case .stopButtonTapped:
+          state.inFlight = nil
+          return .none
+          
+        case let .noteTapped(note):
+          return .run { send in
+            await send(.play(note))
+            try await clock.sleep(for: .seconds(1))
+            await send(.stop(note))
+          }
         }
         
       case let .setSettings(value):
         state.settings = value
         return .none
+        
+      case let .play(note):
+        state.inFlight = note
+        return .run { _ in await sound.play(note) }
+        
+      case let .stop(note):
+        state.inFlight = nil
+        return .run { _ in await sound.stop(note) }
         
       case .destination:
         return .none
@@ -84,6 +130,9 @@ private extension AppReducer.State {
       Array(settings.tuning.notes)
     }
   }
+  var isStopButtonDisabled: Bool {
+    inFlight == nil
+  }
 }
 
 // MARK: - SwiftUI
@@ -105,20 +154,36 @@ struct AppView: View {
           Spacer()
           Divider()
           
-          HStack {
-            ForEach(viewStore.notes) { note in
-              Button(action: { viewStore.send(.play(note)) }) {
-                Text(note.description.prefix(1))
-                  .frame(maxWidth: .infinity, maxHeight: .infinity)
-                  .background(.thinMaterial)
+          VStack {
+            HStack {
+              ForEach(viewStore.notes) { note in
+                Button(action: { viewStore.send(.noteTapped(note)) }) {
+                  Text(note.description.prefix(1))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(viewStore.inFlight == note ? Color.green : Color.white)
+                }
+                .buttonStyle(.plain)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
               }
-              .buttonStyle(.plain)
-              .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
+            .frame(height: 50)
+            .padding(.bottom)
+            
+            
+            Button("Play All") {
+              viewStore.send(.playAllButtonTapped)
+            }
+            .buttonStyle(RoundedRectangleButtonStyle(
+              backgroundColor: .green
+            ))
+            Button("Stop") {
+              viewStore.send(.stopButtonTapped)
+            }
+            .buttonStyle(RoundedRectangleButtonStyle())
+            .disabled(viewStore.isStopButtonDisabled)
           }
           .padding()
           .background(.regularMaterial)
-          .frame(height: 75)
         }
         .frame(maxHeight: .infinity)
         .background(Color.accentColor.gradient)
@@ -144,7 +209,11 @@ struct AppView: View {
 
 #Preview {
   AppView(store: Store(
-    initialState: AppReducer.State(),
+    initialState: AppReducer.State(
+      settings: .init(
+        instrument: .electric
+      )
+    ),
     reducer: AppReducer.init
   ))
 }

@@ -7,12 +7,9 @@ extension SoundClient {
     let conductor = SoundConductor()
     
     return Self(
-      play: { note in
-        await conductor.play(note.midi)
-      },
-      setInstrument: {
-        await conductor.setInstrument($0)
-      }
+      play: { await conductor.play($0.midi) },
+      stop: { await conductor.stop($0.midi) },
+      setInstrument: { await conductor.setInstrument($0) }
     )
   }
 }
@@ -47,6 +44,13 @@ private extension SoundClient {
       unitSampler.startNote(
         note,
         withVelocity: 80,
+        onChannel: channel
+      )
+    }
+    
+    func stop(_ note: UInt8) {
+      unitSampler.stopNote(
+        note,
         onChannel: channel
       )
     }

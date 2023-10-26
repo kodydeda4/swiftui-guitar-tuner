@@ -2,6 +2,7 @@ import Dependencies
 
 struct SoundClient: DependencyKey {
   var play: @Sendable (Note) async -> Void
+  var stop: @Sendable (Note) async -> Void
   var setInstrument: @Sendable (Instrument) async -> Void
 }
 
