@@ -7,13 +7,13 @@ import DependenciesAdditions
 struct AppReducer: Reducer {
   struct State: Equatable {
     var settings = UserDefaults.Dependency.Settings()
-    @PresentationState var destination: Destination.State?
+    @PresentationState var destination: EditSettings.State?
   }
   
   enum Action: Equatable {
     case view(View)
     case setSettings(UserDefaults.Dependency.Settings)
-    case destination(PresentationAction<Destination.Action>)
+    case destination(PresentationAction<EditSettings.Action>)
     
     enum View: Equatable {
       case task
@@ -47,10 +47,10 @@ struct AppReducer: Reducer {
           }
           
         case .editSettingsButtonTapped:
-          state.destination = .editSettings(.init(
+          state.destination = .init(
             instrument: state.settings.instrument,
             tuning: state.settings.tuning
-          ))
+          )
           return .none
           
         case let .play(note):
@@ -67,21 +67,7 @@ struct AppReducer: Reducer {
       }
     }
     .ifLet(\.$destination, action: /Action.destination) {
-      Destination()
-    }
-  }
-  
-  struct Destination: Reducer {
-    enum State: Equatable {
-      case editSettings(EditSettings.State)
-    }
-    enum Action: Equatable {
-      case editSettings(EditSettings.Action)
-    }
-    var body: some ReducerOf<Self> {
-      Scope(state: /State.editSettings, action: /Action.editSettings) {
-        EditSettings()
-      }
+      EditSettings()
     }
   }
 }
@@ -139,8 +125,6 @@ struct AppView: View {
         .navigationTitle(viewStore.navigationTitle)
         .sheet(
           store: store.scope(state: \.$destination, action: AppReducer.Action.destination),
-          state: /AppReducer.Destination.State.editSettings,
-          action: AppReducer.Destination.Action.editSettings,
           content: EditSettingsSheet.init(store:)
         )
         .task { await viewStore.send(.task).finish() }
