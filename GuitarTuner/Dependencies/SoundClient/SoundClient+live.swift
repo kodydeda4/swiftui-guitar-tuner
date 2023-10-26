@@ -16,21 +16,6 @@ extension SoundClient {
 
 // MARK: - Private Implementation
 
-extension SoundClient.Instrument {
-  var soundfontURL: URL {
-    switch self {
-    case .electric:
-      Bundle.main.url(forResource: "Electric", withExtension: "sf2")!
-    case .acoustic:
-      Bundle.main.url(forResource: "Acoustic", withExtension: "sf2")!
-    case .bass:
-      Bundle.main.url(forResource: "Bass", withExtension: "sf2")!
-    case .ukelele:
-      Bundle.main.url(forResource: "Ukelele", withExtension: "sf2")!
-    }
-  }
-}
-
 private extension SoundClient {
   /// Play MIDI through a SoundFont.
   private final actor SoundConductor {

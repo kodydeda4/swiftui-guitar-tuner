@@ -6,6 +6,7 @@ import DependenciesAdditions
 // 1. sound only works when connected to an external audio source.
 // 2. cancel play-all
 // 3. "acoustic" and "electric" soundfonts are horrible
+// 4. try this for playing midi?: https://developer.apple.com/documentation/avfaudio/avmidiplayer
 
 struct AppReducer: Reducer {
   struct State: Equatable {
