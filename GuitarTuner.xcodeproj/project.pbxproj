@@ -17,9 +17,9 @@
 		3323F6D82AE1C52300C715B1 /* Tagged in Frameworks */ = {isa = PBXBuildFile; productRef = 3323F6D72AE1C52300C715B1 /* Tagged */; };
 		3323F6DB2AE1CB9400C715B1 /* UserDefaults.Dependency+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3323F6DA2AE1CB9400C715B1 /* UserDefaults.Dependency+.swift */; };
 		332B30182AEAF23500E507E8 /* UserDefaultsClient+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B30172AEAF23500E507E8 /* UserDefaultsClient+Settings.swift */; };
-		332B301A2AEAF25200E507E8 /* AudioClient+InstrumentTuning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B30192AEAF25200E507E8 /* AudioClient+InstrumentTuning.swift */; };
-		332B301C2AEAF29400E507E8 /* AudioClient+Instrument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B301B2AEAF29400E507E8 /* AudioClient+Instrument.swift */; };
-		332B301E2AEAF2F300E507E8 /* AudioClient+Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B301D2AEAF2F300E507E8 /* AudioClient+Note.swift */; };
+		332B301A2AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B30192AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift */; };
+		332B301C2AEAF29400E507E8 /* SoundClient+Instrument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B301B2AEAF29400E507E8 /* SoundClient+Instrument.swift */; };
+		332B301E2AEAF2F300E507E8 /* SoundClient+Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B301D2AEAF2F300E507E8 /* SoundClient+Note.swift */; };
 		335276712AE1B2340088C222 /* EditSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335276702AE1B2340088C222 /* EditSettings.swift */; };
 		33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D72ADDCC5B00EBC52A /* Main.swift */; };
 		33C200DA2ADDCC5B00EBC52A /* AppReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D92ADDCC5B00EBC52A /* AppReducer.swift */; };
@@ -27,8 +27,8 @@
 		33C200DF2ADDCC5D00EBC52A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33C200DE2ADDCC5D00EBC52A /* Preview Assets.xcassets */; };
 		33C200E92ADDCC5D00EBC52A /* GuitarTunerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200E82ADDCC5D00EBC52A /* GuitarTunerTests.swift */; };
 		33C201072ADDCD6B00EBC52A /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 33C201062ADDCD6B00EBC52A /* ComposableArchitecture */; };
-		33C201092ADDCE3C00EBC52A /* AudioClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C201082ADDCE3C00EBC52A /* AudioClient.swift */; };
-		33C2010F2ADDD55C00EBC52A /* AudioClient+live.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C2010E2ADDD55C00EBC52A /* AudioClient+live.swift */; };
+		33C201092ADDCE3C00EBC52A /* SoundClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C201082ADDCE3C00EBC52A /* SoundClient.swift */; };
+		33C2010F2ADDD55C00EBC52A /* SoundClient+live.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C2010E2ADDD55C00EBC52A /* SoundClient+live.swift */; };
 		33D48A0A2AE74AC8000D66C9 /* Electric.sf2 in Resources */ = {isa = PBXBuildFile; fileRef = 33D48A062AE74AC8000D66C9 /* Electric.sf2 */; };
 		33D48A0B2AE74AC8000D66C9 /* Acoustic.sf2 in Resources */ = {isa = PBXBuildFile; fileRef = 33D48A072AE74AC8000D66C9 /* Acoustic.sf2 */; };
 		33D48A0C2AE74AC8000D66C9 /* Bass.sf2 in Resources */ = {isa = PBXBuildFile; fileRef = 33D48A082AE74AC8000D66C9 /* Bass.sf2 */; };
@@ -50,9 +50,9 @@
 		3301072D2ADEFEBF00102264 /* RoundedRectangleButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedRectangleButtonStyle.swift; sourceTree = "<group>"; };
 		3323F6DA2AE1CB9400C715B1 /* UserDefaults.Dependency+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults.Dependency+.swift"; sourceTree = "<group>"; };
 		332B30172AEAF23500E507E8 /* UserDefaultsClient+Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaultsClient+Settings.swift"; sourceTree = "<group>"; };
-		332B30192AEAF25200E507E8 /* AudioClient+InstrumentTuning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioClient+InstrumentTuning.swift"; sourceTree = "<group>"; };
-		332B301B2AEAF29400E507E8 /* AudioClient+Instrument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioClient+Instrument.swift"; sourceTree = "<group>"; };
-		332B301D2AEAF2F300E507E8 /* AudioClient+Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioClient+Note.swift"; sourceTree = "<group>"; };
+		332B30192AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SoundClient+InstrumentTuning.swift"; sourceTree = "<group>"; };
+		332B301B2AEAF29400E507E8 /* SoundClient+Instrument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SoundClient+Instrument.swift"; sourceTree = "<group>"; };
+		332B301D2AEAF2F300E507E8 /* SoundClient+Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SoundClient+Note.swift"; sourceTree = "<group>"; };
 		335276702AE1B2340088C222 /* EditSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSettings.swift; sourceTree = "<group>"; };
 		33C200D42ADDCC5B00EBC52A /* GuitarTuner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GuitarTuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		33C200D72ADDCC5B00EBC52A /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
@@ -61,8 +61,8 @@
 		33C200DE2ADDCC5D00EBC52A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		33C200E42ADDCC5D00EBC52A /* GuitarTunerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GuitarTunerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		33C200E82ADDCC5D00EBC52A /* GuitarTunerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuitarTunerTests.swift; sourceTree = "<group>"; };
-		33C201082ADDCE3C00EBC52A /* AudioClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioClient.swift; sourceTree = "<group>"; };
-		33C2010E2ADDD55C00EBC52A /* AudioClient+live.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioClient+live.swift"; sourceTree = "<group>"; };
+		33C201082ADDCE3C00EBC52A /* SoundClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundClient.swift; sourceTree = "<group>"; };
+		33C2010E2ADDD55C00EBC52A /* SoundClient+live.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SoundClient+live.swift"; sourceTree = "<group>"; };
 		33D48A062AE74AC8000D66C9 /* Electric.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Electric.sf2; sourceTree = "<group>"; };
 		33D48A072AE74AC8000D66C9 /* Acoustic.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Acoustic.sf2; sourceTree = "<group>"; };
 		33D48A082AE74AC8000D66C9 /* Bass.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bass.sf2; sourceTree = "<group>"; };
@@ -212,7 +212,7 @@
 			isa = PBXGroup;
 			children = (
 				332B30162AEAF21F00E507E8 /* UserDefaultsClient */,
-				33C201102ADDD55E00EBC52A /* AudioClient */,
+				33C201102ADDD55E00EBC52A /* SoundClient */,
 			);
 			path = Dependencies;
 			sourceTree = "<group>";
@@ -237,22 +237,22 @@
 			path = Soundfonts;
 			sourceTree = "<group>";
 		};
-		33C201102ADDD55E00EBC52A /* AudioClient */ = {
+		33C201102ADDD55E00EBC52A /* SoundClient */ = {
 			isa = PBXGroup;
 			children = (
 				33D48A0E2AE74B1E000D66C9 /* _Models */,
-				33C201082ADDCE3C00EBC52A /* AudioClient.swift */,
-				33C2010E2ADDD55C00EBC52A /* AudioClient+live.swift */,
+				33C201082ADDCE3C00EBC52A /* SoundClient.swift */,
+				33C2010E2ADDD55C00EBC52A /* SoundClient+live.swift */,
 			);
-			path = AudioClient;
+			path = SoundClient;
 			sourceTree = "<group>";
 		};
 		33D48A0E2AE74B1E000D66C9 /* _Models */ = {
 			isa = PBXGroup;
 			children = (
-				332B30192AEAF25200E507E8 /* AudioClient+InstrumentTuning.swift */,
-				332B301B2AEAF29400E507E8 /* AudioClient+Instrument.swift */,
-				332B301D2AEAF2F300E507E8 /* AudioClient+Note.swift */,
+				332B30192AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift */,
+				332B301B2AEAF29400E507E8 /* SoundClient+Instrument.swift */,
+				332B301D2AEAF2F300E507E8 /* SoundClient+Note.swift */,
 			);
 			path = _Models;
 			sourceTree = "<group>";
@@ -376,14 +376,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				3301072E2ADEFEBF00102264 /* RoundedRectangleButtonStyle.swift in Sources */,
-				33C201092ADDCE3C00EBC52A /* AudioClient.swift in Sources */,
-				33C2010F2ADDD55C00EBC52A /* AudioClient+live.swift in Sources */,
+				33C201092ADDCE3C00EBC52A /* SoundClient.swift in Sources */,
+				33C2010F2ADDD55C00EBC52A /* SoundClient+live.swift in Sources */,
 				335276712AE1B2340088C222 /* EditSettings.swift in Sources */,
 				33C200DA2ADDCC5B00EBC52A /* AppReducer.swift in Sources */,
 				33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */,
-				332B301E2AEAF2F300E507E8 /* AudioClient+Note.swift in Sources */,
-				332B301C2AEAF29400E507E8 /* AudioClient+Instrument.swift in Sources */,
-				332B301A2AEAF25200E507E8 /* AudioClient+InstrumentTuning.swift in Sources */,
+				332B301E2AEAF2F300E507E8 /* SoundClient+Note.swift in Sources */,
+				332B301C2AEAF29400E507E8 /* SoundClient+Instrument.swift in Sources */,
+				332B301A2AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift in Sources */,
 				3323F6DB2AE1CB9400C715B1 /* UserDefaults.Dependency+.swift in Sources */,
 				332B30182AEAF23500E507E8 /* UserDefaultsClient+Settings.swift in Sources */,
 				3301072B2ADEFE4300102264 /* View+navigationOverlay.swift in Sources */,

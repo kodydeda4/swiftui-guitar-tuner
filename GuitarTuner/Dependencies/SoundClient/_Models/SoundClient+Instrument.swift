@@ -1,6 +1,6 @@
 import Foundation
 
-extension AudioClient {
+extension SoundClient {
   enum Instrument: String, Equatable, Codable, CaseIterable {
     case acoustic = "Acoustic"
     case electric = "Electric"
@@ -11,15 +11,15 @@ extension AudioClient {
 
 // MARK: - Extensions
 
-extension AudioClient.Instrument: Identifiable {
+extension SoundClient.Instrument: Identifiable {
   var id: Self { self }
 }
 
-extension AudioClient.Instrument: CustomStringConvertible {
+extension SoundClient.Instrument: CustomStringConvertible {
   var description: String { rawValue }
 }
 
-extension AudioClient.Instrument {
+extension SoundClient.Instrument {
   var imageLarge: ImageResource {
     switch self {
     case .acoustic: return .acoustic

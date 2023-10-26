@@ -1,6 +1,6 @@
 import Foundation
 
-extension AudioClient {
+extension SoundClient {
   struct Note: Equatable {
     let description: String
     let midi: UInt8
@@ -9,6 +9,6 @@ extension AudioClient {
 
 // MARK: - Extensions
 
-extension AudioClient.Note: Identifiable {
+extension SoundClient.Note: Identifiable {
   var id: UInt8 { midi }
 }

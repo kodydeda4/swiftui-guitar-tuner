@@ -1,6 +1,6 @@
 import Foundation
 
-extension AudioClient {
+extension SoundClient {
   enum InstrumentTuning: String, Codable, Equatable, CaseIterable {
     case eStandard = "E Standard"
     case dropD = "Drop D"
@@ -10,16 +10,16 @@ extension AudioClient {
 
 // MARK: - Extensions
 
-extension AudioClient.InstrumentTuning: Identifiable {
+extension SoundClient.InstrumentTuning: Identifiable {
   var id: Self { self }
 }
 
-extension AudioClient.InstrumentTuning: CustomStringConvertible {
+extension SoundClient.InstrumentTuning: CustomStringConvertible {
   var description: String { rawValue }
 }
 
-extension AudioClient.InstrumentTuning {
-  var notes: [AudioClient.Note] {
+extension SoundClient.InstrumentTuning {
+  var notes: [SoundClient.Note] {
     switch self {
     case .eStandard:
       return [

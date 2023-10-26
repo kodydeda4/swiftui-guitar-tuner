@@ -5,12 +5,12 @@ import Tagged
 
 struct EditSettings: Reducer {
   struct State: Equatable {
-    var instrument = AudioClient.Instrument.electric
-    var tuning = AudioClient.InstrumentTuning.eStandard
+    var instrument = SoundClient.Instrument.electric
+    var tuning = SoundClient.InstrumentTuning.eStandard
   }
   enum Action: Equatable {
-    case setInstrument(AudioClient.Instrument)
-    case setTuning(AudioClient.InstrumentTuning)
+    case setInstrument(SoundClient.Instrument)
+    case setTuning(SoundClient.InstrumentTuning)
     case doneButtonTapped
   }
   
@@ -94,7 +94,7 @@ private struct Header: View {
           get: \.instrument,
           send: { .setInstrument($0) }
         )) {
-          ForEach(AudioClient.Instrument.allCases) { instrument in
+          ForEach(SoundClient.Instrument.allCases) { instrument in
             Image(instrument.imageLarge)
               .resizable()
               .scaledToFit()
@@ -123,7 +123,7 @@ private struct TuningView: View {
   var body: some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       Section {
-        ForEach(AudioClient.InstrumentTuning.allCases) { tuning in
+        ForEach(SoundClient.InstrumentTuning.allCases) { tuning in
           btn(tuning)
         }
       } header: {
@@ -135,7 +135,7 @@ private struct TuningView: View {
     }
   }
   
-  private func btn(_ tuning: AudioClient.InstrumentTuning) -> some View {
+  private func btn(_ tuning: SoundClient.InstrumentTuning) -> some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       let isSelected = viewStore.tuning == tuning
       Button {
@@ -158,7 +158,6 @@ private struct TuningView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background { Color.pink.opacity(0.000001) }
       }
-      //.buttonStyle(.link)
     }
   }
 }
@@ -170,7 +169,7 @@ private struct InstrumentsView: View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       Section {
         HStack {
-          ForEach(AudioClient.Instrument.allCases) { instrument in
+          ForEach(SoundClient.Instrument.allCases) { instrument in
             Button {
               viewStore.send(.setInstrument(instrument), animation: .spring())
             } label: {

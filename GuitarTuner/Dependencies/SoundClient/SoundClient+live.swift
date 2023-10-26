@@ -2,7 +2,7 @@ import AVKit
 import AVFoundation
 import Foundation
 
-extension AudioClient {
+extension SoundClient {
   static var live: Self {
     let conductor = SoundConductor()
     
@@ -19,7 +19,7 @@ extension AudioClient {
 
 // MARK: - Private Implementation
 
-extension AudioClient.Instrument {
+extension SoundClient.Instrument {
   var soundfontURL: URL {
     switch self {
     case .electric:
@@ -34,7 +34,7 @@ extension AudioClient.Instrument {
   }
 }
 
-private extension AudioClient {
+private extension SoundClient {
   /// Play MIDI through a SoundFont.
   private final actor SoundConductor {
     var instrument = Instrument.electric

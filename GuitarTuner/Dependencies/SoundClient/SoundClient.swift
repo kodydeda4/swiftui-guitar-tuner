@@ -1,19 +1,19 @@
 import Dependencies
 
-struct AudioClient: DependencyKey {
+struct SoundClient: DependencyKey {
   var play: @Sendable (Note) async -> Void
   var setInstrument: @Sendable (Instrument) async -> Void
 }
 
 extension DependencyValues {
-  var sound: AudioClient {
-    get { self[AudioClient.self] }
-    set { self[AudioClient.self] = newValue }
+  var sound: SoundClient {
+    get { self[SoundClient.self] }
+    set { self[SoundClient.self] = newValue }
   }
 }
 
 // MARK: - Implementations
 
-extension AudioClient {
+extension SoundClient {
   static var liveValue = Self.live
 }

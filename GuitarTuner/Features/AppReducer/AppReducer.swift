@@ -18,7 +18,7 @@ struct AppReducer: Reducer {
     enum View: Equatable {
       case task
       case editSettingsButtonTapped
-      case play(AudioClient.Note)
+      case play(SoundClient.Note)
     }
   }
   
@@ -90,7 +90,7 @@ private extension AppReducer.State {
   var navigationTitle: String {
     settings.instrument.rawValue
   }
-  var notes: [AudioClient.Note] {
+  var notes: [SoundClient.Note] {
     switch settings.instrument {
     case .bass:
       Array(settings.tuning.notes.prefix(upTo: 4))
