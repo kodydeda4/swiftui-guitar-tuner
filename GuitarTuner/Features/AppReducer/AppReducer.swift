@@ -4,6 +4,8 @@ import DependenciesAdditions
 
 // MARK: - Bugs:
 // 1. sound only works when connected to an external audio source.
+// 2. cancel play-all
+// 3. "acoustic" and "electric" soundfonts are horrible
 
 struct AppReducer: Reducer {
   struct State: Equatable {
@@ -65,7 +67,11 @@ struct AppReducer: Reducer {
         case .playAllButtonTapped:
           guard !state.isPlayAllInFlight else { return .none }
           state.isPlayAllInFlight = true
-          return .run { [notes = state.notes] send in
+          return .run { [inFlight = state.inFlight, notes = state.notes] send in
+            // stop any playing notes
+            if let inFlight {
+              await send(.stop(inFlight))
+            }
             // play all the notes at a normal speed
             for note in notes {
               await send(.play(note))
@@ -262,7 +268,7 @@ private struct InstrumentsView: View {
   
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      Section {
+      DisclosureGroup {
         HStack {
           ForEach(SoundClient.Instrument.allCases) { instrument in
             Button {
@@ -295,7 +301,7 @@ private struct InstrumentsView: View {
           }
         }
         .frame(maxWidth: .infinity)
-      } header: {
+      } label: {
         Text("Instrument")
           .font(.title2)
           .bold()
@@ -311,11 +317,11 @@ private struct TuningView: View {
   
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      Section {
+      DisclosureGroup {
         ForEach(SoundClient.InstrumentTuning.allCases) { tuning in
           btn(tuning)
         }
-      } header: {
+      } label: {
         Text("Tuning")
           .font(.title2)
           .bold()
