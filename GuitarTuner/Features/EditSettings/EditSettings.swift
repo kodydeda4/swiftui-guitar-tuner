@@ -5,13 +5,12 @@ import Tagged
 
 struct EditSettings: Reducer {
   struct State: Equatable {
-    var instrument = Instrument.electric
-    var tuning = InstrumentTuning.eStandard
+    var instrument = AudioClient.Instrument.electric
+    var tuning = AudioClient.InstrumentTuning.eStandard
   }
-  
   enum Action: Equatable {
-    case setInstrument(Instrument)
-    case setTuning(InstrumentTuning)
+    case setInstrument(AudioClient.Instrument)
+    case setTuning(AudioClient.InstrumentTuning)
     case doneButtonTapped
   }
   
@@ -19,27 +18,25 @@ struct EditSettings: Reducer {
   @Dependency(\.userDefaults) var userDefaults
   @Dependency(\.sound) var sound
   @Dependency(\.encode) var encode
-
-  var body: some ReducerOf<Self> {
-    Reduce { state, action in
-      switch action {
-        
-      case let .setInstrument(value):
-        state.instrument = value
-        return .run { _ in
-          await self.sound.setInstrument(value)
-        }
+  
+  func reduce(into state: inout State, action: Action) -> Effect<Action> {
+    switch action {
       
-      case let .setTuning(value):
-        state.tuning = value
-        return .none
+    case let .setInstrument(value):
+      state.instrument = value
+      return .run { _ in
+        await self.sound.setInstrument(value)
+      }
       
-      case .doneButtonTapped:
-        let output = UserDefaults.Dependency.Settings.init(from: state)
-        return .run { _ in
-          try? userDefaults.set(encode(output), forKey: .settings)
-          await self.dismiss()
-        }
+    case let .setTuning(value):
+      state.tuning = value
+      return .none
+      
+    case .doneButtonTapped:
+      let output = UserDefaults.Dependency.Settings.init(from: state)
+      return .run { _ in
+        try? userDefaults.set(encode(output), forKey: .settings)
+        await self.dismiss()
       }
     }
   }
@@ -97,8 +94,8 @@ private struct Header: View {
           get: \.instrument,
           send: { .setInstrument($0) }
         )) {
-          ForEach(Instrument.allCases) { instrument in
-            Image(instrument.image)
+          ForEach(AudioClient.Instrument.allCases) { instrument in
+            Image(instrument.imageLarge)
               .resizable()
               .scaledToFit()
               .padding(8)
@@ -126,7 +123,7 @@ private struct TuningView: View {
   var body: some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       Section {
-        ForEach(InstrumentTuning.allCases) { tuning in
+        ForEach(AudioClient.InstrumentTuning.allCases) { tuning in
           btn(tuning)
         }
       } header: {
@@ -138,7 +135,7 @@ private struct TuningView: View {
     }
   }
   
-  private func btn(_ tuning: InstrumentTuning) -> some View {
+  private func btn(_ tuning: AudioClient.InstrumentTuning) -> some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       let isSelected = viewStore.tuning == tuning
       Button {
@@ -173,12 +170,12 @@ private struct InstrumentsView: View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       Section {
         HStack {
-          ForEach(Instrument.allCases) { instrument in
+          ForEach(AudioClient.Instrument.allCases) { instrument in
             Button {
               viewStore.send(.setInstrument(instrument), animation: .spring())
             } label: {
               VStack {
-                Image(instrument.thumnailImage)
+                Image(instrument.imageSmall)
                   .resizable()
                   .scaledToFit()
                   .frame(width: 75, height: 75)

@@ -11,11 +11,15 @@ struct AppReducer: Reducer {
   }
   
   enum Action: Equatable {
-    case task
+    case view(View)
     case setSettings(UserDefaults.Dependency.Settings)
-    case play(Note)
-    case editSettingsButtonTapped
     case destination(PresentationAction<Destination.Action>)
+    
+    enum View: Equatable {
+      case task
+      case editSettingsButtonTapped
+      case play(AudioClient.Note)
+    }
   }
   
   @Dependency(\.sound) var sound
@@ -25,37 +29,39 @@ struct AppReducer: Reducer {
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
-        
-      case .task:
-        return .run { send in
-          await withTaskGroup(of: Void.self) { group in
-            group.addTask {
-              for await data in userDefaults.dataValues(forKey: .settings) {
-                if let value = data.flatMap({ try? decode(UserDefaults.Dependency.Settings.self, from: $0) }) {
-                  await send(.setSettings(value))
+      
+      case let .view(action):
+        switch action {
+          
+        case .task:
+          return .run { send in
+            await withTaskGroup(of: Void.self) { group in
+              group.addTask {
+                for await data in userDefaults.dataValues(forKey: .settings) {
+                  if let value = data.flatMap({ try? decode(UserDefaults.Dependency.Settings.self, from: $0) }) {
+                    await send(.setSettings(value))
+                  }
                 }
               }
             }
           }
+          
+        case .editSettingsButtonTapped:
+          state.destination = .editSettings(.init(
+            instrument: state.settings.instrument,
+            tuning: state.settings.tuning
+          ))
+          return .none
+          
+        case let .play(note):
+          return .run { _ in await sound.play(note) }
         }
         
       case let .setSettings(value):
         state.settings = value
         return .none
         
-      case let .play(note):
-        return .run { _ in
-          await sound.play(note)
-        }
-        
-      case .editSettingsButtonTapped:
-        state.destination = .editSettings(.init(
-          instrument: state.settings.instrument,
-          tuning: state.settings.tuning
-        ))
-        return .none
-        
-      default:
+      case .destination:
         return .none
         
       }
@@ -84,10 +90,8 @@ private extension AppReducer.State {
   var navigationTitle: String {
     settings.instrument.rawValue
   }
-  var notes: [Note] {
+  var notes: [AudioClient.Note] {
     switch settings.instrument {
-      //    case .electric:
-      //      Array(tuning.notes)
     case .bass:
       Array(settings.tuning.notes.prefix(upTo: 4))
     default:
@@ -102,10 +106,10 @@ struct AppView: View {
   let store: StoreOf<AppReducer>
   
   var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
+    WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       NavigationStack {
         VStack(spacing: 0) {
-          Image(viewStore.settings.instrument.image)
+          Image(viewStore.settings.instrument.imageLarge)
             .resizable()
             .scaledToFit()
             .padding(8)
