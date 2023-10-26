@@ -18,13 +18,13 @@ struct AppReducer: Reducer {
     case setSettings(UserDefaults.Dependency.Settings)
     case play(SoundClient.Note)
     case stop(SoundClient.Note)
-    case playAllDidComplete
+    case didCompletePlayAll
     case destination(PresentationAction<EditSettings.Action>)
     
     enum View: BindableAction, Equatable {
       case task
       case editSettingsButtonTapped
-      case noteTapped(SoundClient.Note)
+      case noteButtonTapped(SoundClient.Note)
       case playAllButtonTapped
       case stopButtonTapped
       case binding(BindingAction<State>)
@@ -88,14 +88,17 @@ struct AppReducer: Reducer {
               try await clock.sleep(for: .seconds(1))
               await send(.stop(last))
             }
-            await send(.playAllDidComplete)
+            await send(.didCompletePlayAll)
           }
           
         case .stopButtonTapped:
           state.inFlight = nil
           return .none
           
-        case let .noteTapped(note):
+        case let .noteButtonTapped(note):
+          guard note != state.inFlight else {
+            return .run { await $0(.stop(note)) }
+          }
           return .run { [isRingEnabled = state.isRingEnabled] send in
             await send(.play(note))
             
@@ -128,7 +131,7 @@ struct AppReducer: Reducer {
         state.inFlight = nil
         return .run { _ in await sound.stop(note) }
         
-      case .playAllDidComplete:
+      case .didCompletePlayAll:
         state.isPlayAllInFlight = false
         return .none
         
@@ -156,7 +159,8 @@ private extension AppReducer.State {
     }
   }
   func isNoteButtonDisabled(_ note: SoundClient.Note) -> Bool {
-    inFlight == note || isPlayAllInFlight
+    //inFlight == note || isPlayAllInFlight
+    isPlayAllInFlight
   }
   var isPlayAllButtonDisabled: Bool {
     isPlayAllInFlight
@@ -200,7 +204,7 @@ struct AppView: View {
             
             HStack {
               ForEach(viewStore.notes) { note in
-                Button(action: { viewStore.send(.noteTapped(note)) }) {
+                Button(action: { viewStore.send(.noteButtonTapped(note)) }) {
                   Text(note.description.prefix(1))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(viewStore.inFlight == note ? Color.green : Color.white)
