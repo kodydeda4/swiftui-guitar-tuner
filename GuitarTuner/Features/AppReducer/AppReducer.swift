@@ -8,6 +8,8 @@ struct AppReducer: Reducer {
   struct State: Equatable {
     var settings = UserDefaults.Dependency.Settings()
     var inFlight: SoundClient.Note?
+    var isPlayAllInFlight = false
+    @BindingState var isRingEnabled = false
     @PresentationState var destination: EditSettings.State?
   }
   
@@ -16,14 +18,16 @@ struct AppReducer: Reducer {
     case setSettings(UserDefaults.Dependency.Settings)
     case play(SoundClient.Note)
     case stop(SoundClient.Note)
+    case playAllDidComplete
     case destination(PresentationAction<EditSettings.Action>)
     
-    enum View: Equatable {
+    enum View: BindableAction, Equatable {
       case task
       case editSettingsButtonTapped
       case noteTapped(SoundClient.Note)
       case playAllButtonTapped
       case stopButtonTapped
+      case binding(BindingAction<State>)
     }
   }
   
@@ -33,6 +37,7 @@ struct AppReducer: Reducer {
   @Dependency(\.decode) var decode
   
   var body: some ReducerOf<Self> {
+    BindingReducer(action: /Action.view)
     Reduce { state, action in
       switch action {
       
@@ -62,6 +67,8 @@ struct AppReducer: Reducer {
           return .none
           
         case .playAllButtonTapped:
+          guard !state.isPlayAllInFlight else { return .none }
+          state.isPlayAllInFlight = true
           return .run { [notes = state.notes] send in
             // play all the notes at a normal speed
             for note in notes {
@@ -81,6 +88,7 @@ struct AppReducer: Reducer {
               try await clock.sleep(for: .seconds(1))
               await send(.stop(last))
             }
+            await send(.playAllDidComplete)
           }
           
         case .stopButtonTapped:
@@ -88,11 +96,24 @@ struct AppReducer: Reducer {
           return .none
           
         case let .noteTapped(note):
-          return .run { send in
+          return .run { [isRingEnabled = state.isRingEnabled] send in
             await send(.play(note))
-            try await clock.sleep(for: .seconds(1))
-            await send(.stop(note))
+            
+            if !isRingEnabled {
+              try await clock.sleep(for: .seconds(2))
+              await send(.stop(note))
+            }
           }
+          
+        case .binding(.set(\.$isRingEnabled, false)):
+          guard let inFlight = state.inFlight else { return .none }
+          return .run { send in
+            try await clock.sleep(for: .seconds(1))
+            await send(.stop(inFlight))
+          }
+          
+        case .binding:
+          return .none
         }
         
       case let .setSettings(value):
@@ -106,6 +127,10 @@ struct AppReducer: Reducer {
       case let .stop(note):
         state.inFlight = nil
         return .run { _ in await sound.stop(note) }
+        
+      case .playAllDidComplete:
+        state.isPlayAllInFlight = false
+        return .none
         
       case .destination:
         return .none
@@ -129,6 +154,12 @@ private extension AppReducer.State {
     default:
       Array(settings.tuning.notes)
     }
+  }
+  func isNoteButtonDisabled(_ note: SoundClient.Note) -> Bool {
+    inFlight == note || isPlayAllInFlight
+  }
+  var isPlayAllButtonDisabled: Bool {
+    isPlayAllInFlight
   }
   var isStopButtonDisabled: Bool {
     inFlight == nil
@@ -155,6 +186,18 @@ struct AppView: View {
           Divider()
           
           VStack {
+            VStack(alignment: .leading) {
+              Toggle(isOn: viewStore.$isRingEnabled) {
+                Text("🔁 Ring")
+                  .font(.title2)
+                  .fontWeight(.semibold)
+              }
+              Text("Allow the note to ring until you tell it stop.")
+                .foregroundStyle(.secondary)
+            }
+            Divider()
+              .padding(.vertical, 8)
+            
             HStack {
               ForEach(viewStore.notes) { note in
                 Button(action: { viewStore.send(.noteTapped(note)) }) {
@@ -164,11 +207,11 @@ struct AppView: View {
                 }
                 .buttonStyle(.plain)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .disabled(viewStore.state.isNoteButtonDisabled(note))
               }
             }
             .frame(height: 50)
             .padding(.bottom)
-            
             
             Button("Play All") {
               viewStore.send(.playAllButtonTapped)
@@ -176,6 +219,8 @@ struct AppView: View {
             .buttonStyle(RoundedRectangleButtonStyle(
               backgroundColor: .green
             ))
+            .disabled(viewStore.isPlayAllButtonDisabled)
+            
             Button("Stop") {
               viewStore.send(.stopButtonTapped)
             }
