@@ -2,7 +2,8 @@ import SwiftUI
 import ComposableArchitecture
 import DependenciesAdditions
 
-// sound only works when connected to an external audio source.
+// MARK: - Bugs:
+// 1. sound only works when connected to an external audio source.
 
 struct AppReducer: Reducer {
   struct State: Equatable {
@@ -96,12 +97,16 @@ struct AppReducer: Reducer {
           return .none
           
         case let .noteButtonTapped(note):
-          guard note != state.inFlight else {
-            return .run { await $0(.stop(note)) }
-          }
-          return .run { [isRingEnabled = state.isRingEnabled] send in
-            await send(.play(note))
-            
+          return .run { [
+            inFlight = state.inFlight,
+            isRingEnabled = state.isRingEnabled
+          ] send in
+            if let inFlight {
+              await send(.stop(inFlight))
+            }
+            if note != inFlight {
+              await send(.play(note))
+            }
             if !isRingEnabled {
               try await clock.sleep(for: .seconds(2))
               await send(.stop(note))
