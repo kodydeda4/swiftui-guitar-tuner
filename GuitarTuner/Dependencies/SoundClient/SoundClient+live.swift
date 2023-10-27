@@ -8,8 +8,8 @@ extension SoundClient {
     let conductor = Conductor()
     
     return Self(
-      play: { conductor.play(Pitch(intValue: Int($0.midi))) },
-      stop: { conductor.stop(Pitch(intValue: Int($0.midi))) },
+      play: { conductor.play($0) },
+      stop: { conductor.stop($0) },
       setInstrument: { _ in  }
     )
   }

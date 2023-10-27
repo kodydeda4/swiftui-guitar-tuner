@@ -1,5 +1,6 @@
 import SwiftUI
 import ComposableArchitecture
+import Tonic
 import DependenciesAdditions
 
 // MARK: - Bugs:
@@ -8,11 +9,12 @@ import DependenciesAdditions
 // 3. "acoustic" and "electric" soundfonts are horrible
 // 4. try this for playing midi?: https://developer.apple.com/documentation/avfaudio/avmidiplayer
 
+
 struct AppReducer: Reducer {
   struct State: Equatable {
     var instrument = SoundClient.Instrument.electric
     var tuning = SoundClient.InstrumentTuning.eStandard
-    var inFlight: SoundClient.Note?
+    var inFlight: Note?
     var isPlayAllInFlight = false
     @BindingState var isRingEnabled = false
   }
@@ -20,15 +22,15 @@ struct AppReducer: Reducer {
   enum Action: Equatable {
     case view(View)
     case setSettings(UserDefaults.Dependency.Settings)
-    case play(SoundClient.Note)
-    case stop(SoundClient.Note)
+    case play(Note)
+    case stop(Note)
     case didCompletePlayAll
     
     enum View: BindableAction, Equatable {
       case task
       case setInstrument(SoundClient.Instrument)
       case setTuning(SoundClient.InstrumentTuning)
-      case noteButtonTapped(SoundClient.Note)
+      case noteButtonTapped(Note)
       case playAllButtonTapped
       case stopButtonTapped
       case binding(BindingAction<State>)
@@ -147,11 +149,11 @@ struct AppReducer: Reducer {
         
       case let .play(note):
         state.inFlight = note
-        return .run { _ in await sound.play(note) }
+        return .run { _ in await sound.play(note.pitch) }
         
       case let .stop(note):
         state.inFlight = nil
-        return .run { _ in await sound.stop(note) }
+        return .run { _ in await sound.stop(note.pitch) }
         
       case .didCompletePlayAll:
         state.isPlayAllInFlight = false
@@ -166,15 +168,16 @@ private extension AppReducer.State {
   var navigationTitle: String {
     instrument.rawValue
   }
-  var notes: [SoundClient.Note] {
+  var notes: [Note] {
     switch instrument {
     case .bass:
       Array(tuning.notes.prefix(upTo: 4))
+      
     default:
       Array(tuning.notes)
     }
   }
-  func isNoteButtonDisabled(_ note: SoundClient.Note) -> Bool {
+  func isNoteButtonDisabled(_ note: Note) -> Bool {
     //inFlight == note || isPlayAllInFlight
     isPlayAllInFlight
   }

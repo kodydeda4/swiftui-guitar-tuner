@@ -19,10 +19,10 @@
 		332B30182AEAF23500E507E8 /* UserDefaultsClient+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B30172AEAF23500E507E8 /* UserDefaultsClient+Settings.swift */; };
 		332B301A2AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B30192AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift */; };
 		332B301C2AEAF29400E507E8 /* SoundClient+Instrument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B301B2AEAF29400E507E8 /* SoundClient+Instrument.swift */; };
-		332B301E2AEAF2F300E507E8 /* SoundClient+Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B301D2AEAF2F300E507E8 /* SoundClient+Note.swift */; };
 		337C29B52AEBEEF1004FB6BD /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = 337C29B42AEBEEF1004FB6BD /* Tonic */; };
 		337C29B92AEBF0EB004FB6BD /* saw1.wav in Resources */ = {isa = PBXBuildFile; fileRef = 337C29B72AEBF0EB004FB6BD /* saw1.wav */; };
 		337C29BA2AEBF0EB004FB6BD /* Instrument1.aupreset in Resources */ = {isa = PBXBuildFile; fileRef = 337C29B82AEBF0EB004FB6BD /* Instrument1.aupreset */; };
+		337C29BC2AEBF418004FB6BD /* Tonic+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337C29BB2AEBF418004FB6BD /* Tonic+.swift */; };
 		33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D72ADDCC5B00EBC52A /* Main.swift */; };
 		33C200DA2ADDCC5B00EBC52A /* AppReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D92ADDCC5B00EBC52A /* AppReducer.swift */; };
 		33C200DC2ADDCC5D00EBC52A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33C200DB2ADDCC5D00EBC52A /* Assets.xcassets */; };
@@ -54,10 +54,10 @@
 		332B30172AEAF23500E507E8 /* UserDefaultsClient+Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaultsClient+Settings.swift"; sourceTree = "<group>"; };
 		332B30192AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SoundClient+InstrumentTuning.swift"; sourceTree = "<group>"; };
 		332B301B2AEAF29400E507E8 /* SoundClient+Instrument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SoundClient+Instrument.swift"; sourceTree = "<group>"; };
-		332B301D2AEAF2F300E507E8 /* SoundClient+Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SoundClient+Note.swift"; sourceTree = "<group>"; };
 		3365F7B32AEB2E1000014C39 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		337C29B72AEBF0EB004FB6BD /* saw1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = saw1.wav; sourceTree = "<group>"; };
 		337C29B82AEBF0EB004FB6BD /* Instrument1.aupreset */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Instrument1.aupreset; sourceTree = "<group>"; };
+		337C29BB2AEBF418004FB6BD /* Tonic+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tonic+.swift"; sourceTree = "<group>"; };
 		33C200D42ADDCC5B00EBC52A /* GuitarTuner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GuitarTuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		33C200D72ADDCC5B00EBC52A /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		33C200D92ADDCC5B00EBC52A /* AppReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReducer.swift; sourceTree = "<group>"; };
@@ -136,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				3323F6DA2AE1CB9400C715B1 /* UserDefaults.Dependency+.swift */,
+				337C29BB2AEBF418004FB6BD /* Tonic+.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -259,7 +260,6 @@
 			children = (
 				332B30192AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift */,
 				332B301B2AEAF29400E507E8 /* SoundClient+Instrument.swift */,
-				332B301D2AEAF2F300E507E8 /* SoundClient+Note.swift */,
 			);
 			path = _Models;
 			sourceTree = "<group>";
@@ -391,11 +391,11 @@
 				33C2010F2ADDD55C00EBC52A /* SoundClient+live.swift in Sources */,
 				33C200DA2ADDCC5B00EBC52A /* AppReducer.swift in Sources */,
 				33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */,
-				332B301E2AEAF2F300E507E8 /* SoundClient+Note.swift in Sources */,
 				332B301C2AEAF29400E507E8 /* SoundClient+Instrument.swift in Sources */,
 				332B301A2AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift in Sources */,
 				3323F6DB2AE1CB9400C715B1 /* UserDefaults.Dependency+.swift in Sources */,
 				332B30182AEAF23500E507E8 /* UserDefaultsClient+Settings.swift in Sources */,
+				337C29BC2AEBF418004FB6BD /* Tonic+.swift in Sources */,
 				3301072B2ADEFE4300102264 /* View+navigationOverlay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
