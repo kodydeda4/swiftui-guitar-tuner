@@ -149,11 +149,11 @@ struct AppReducer: Reducer {
         
       case let .play(note):
         state.inFlight = note
-        return .run { _ in await sound.play(note.pitch) }
+        return .run { _ in await sound.play(note) }
         
       case let .stop(note):
         state.inFlight = nil
-        return .run { _ in await sound.stop(note.pitch) }
+        return .run { _ in await sound.stop(note) }
         
       case .didCompletePlayAll:
         state.isPlayAllInFlight = false

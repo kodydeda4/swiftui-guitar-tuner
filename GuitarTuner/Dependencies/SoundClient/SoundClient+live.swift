@@ -35,11 +35,11 @@ private final class Conductor {
     }
   }
   
-  func play(_ pitch: Pitch) {
-    instrument.startNote(UInt8(pitch.intValue), withVelocity: 127, onChannel: 0)
+  func play(_ note: Note) {
+    instrument.startNote(UInt8(note.intValue), withVelocity: 127, onChannel: 0)
   }
   
-  func stop(_ pitch: Pitch) {
-    instrument.stopNote(UInt8(pitch.intValue), onChannel: 0)
+  func stop(_ note: Note) {
+    instrument.stopNote(UInt8(note.intValue), onChannel: 0)
   }
 }
