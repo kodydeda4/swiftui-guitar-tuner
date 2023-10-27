@@ -274,7 +274,7 @@ private struct InstrumentsView: View {
   
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      DisclosureGroup {
+      Section {
         HStack {
           ForEach(SoundClient.Instrument.allCases) { instrument in
             Button {
@@ -307,7 +307,7 @@ private struct InstrumentsView: View {
           }
         }
         .frame(maxWidth: .infinity)
-      } label: {
+      } header: {
         Text("Instrument")
           .font(.title2)
           .bold()
@@ -323,11 +323,11 @@ private struct TuningView: View {
   
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      DisclosureGroup {
+      Section {
         ForEach(SoundClient.InstrumentTuning.allCases) { tuning in
           btn(tuning)
         }
-      } label: {
+      } header: {
         Text("Tuning")
           .font(.title2)
           .bold()
@@ -368,14 +368,18 @@ private struct RingToggle: View {
   
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      VStack(alignment: .leading) {
-        Toggle(isOn: viewStore.$isRingEnabled) {
-          Text("🔁 Ring")
-            .font(.title2)
-            .fontWeight(.semibold)
+      Section {
+        EmptyView()
+      } header: {
+        VStack(alignment: .leading) {
+          Toggle(isOn: viewStore.$isRingEnabled) {
+            Text("Ring")
+              .font(.title2)
+              .bold()
+              .foregroundColor(.primary)
+          }
+          Text("Allow the note to ring until you tell it stop.")
         }
-        Text("Allow the note to ring until you tell it stop.")
-          .foregroundStyle(.secondary)
       }
     }
   }
