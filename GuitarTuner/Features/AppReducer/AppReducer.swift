@@ -269,7 +269,7 @@ struct AppView: View {
             }
             .navigationTitle("Settings")
           }
-          .presentationDetents([.height(300)])
+          //.presentationDetents([.height(300)])
         }
       }
       .task { await viewStore.send(.task).finish() }
