@@ -295,7 +295,11 @@ private struct Header: View {
       }
       .tabViewStyle(.page(indexDisplayMode: .never))
       .frame(maxWidth: .infinity)
-      .background(Color(.systemBackground).gradient)
+      .background(LinearGradient(
+        colors: [.accentColor, .clear],
+        startPoint: .top,
+        endPoint: .bottom
+      ))
       .listRowSeparator(.hidden)
       .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
