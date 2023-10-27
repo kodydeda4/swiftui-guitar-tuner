@@ -219,27 +219,17 @@ struct AppView: View {
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       NavigationStack {
-        List {
-          Section {
+        VStack {
+          ZStack {
             Header(store: store)
-            InstrumentsView(store: store)
-          }
-          .padding(.bottom)
-          RingToggle(store: store)
-          TuningView(store: store)
-          
-          Spacer().frame(height: 255)
-        }
-        .navigationTitle(viewStore.navigationTitle)
-        .listStyle(.plain)
-        .navigationOverlay {
-          VStack {
-            Text("Settings")
-              .font(.title2)
-              .fontWeight(.semibold)
-              .frame(maxWidth: .infinity, alignment: .leading)
             TuningButtons(store: store)
-              .padding(.bottom)
+              .padding()
+          }
+          //.frame(height: 300)
+
+          VStack {
+            InstrumentsView(store: store)
+              .padding(.vertical)
             HStack {
               Group {
                 if !viewStore.isPlayAllInFlight {
@@ -255,12 +245,31 @@ struct AppView: View {
                 }
               }
               Button("⚙️") {
-                viewStore.send(.stopButtonTapped)
+                viewStore.send(.binding(.set(\.$isSheetPresented, true)))
               }
               .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: Color(.systemGray)))
               .frame(width: 50)
             }
           }
+          .padding()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .navigationTitle(viewStore.navigationTitle)
+        .listStyle(.plain)
+        .toolbar {
+          Button("Settings") {
+            viewStore.send(.binding(.set(\.$isSheetPresented, true)))
+          }
+        }
+        .sheet(isPresented: viewStore.$isSheetPresented) {
+          NavigationStack {
+            List {
+              RingToggle(store: store)
+              TuningView(store: store)
+            }
+            .navigationTitle("Settings")
+          }
+          .presentationDetents([.height(300)])
         }
       }
       .task { await viewStore.send(.task).finish() }
@@ -273,32 +282,22 @@ private struct Header: View {
   
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-//      Section {
-        TabView(selection: viewStore.$instrument) {
-          ForEach(SoundClient.Instrument.allCases) { instrument in
-            Image(instrument.imageLarge)
-              .resizable()
-              .scaledToFit()
-              .padding(8)
-              .clipShape(Circle())
-              .frame(maxWidth: .infinity, alignment: .center)
-              .tag(instrument)
-          }
+      TabView(selection: viewStore.$instrument) {
+        ForEach(SoundClient.Instrument.allCases) { instrument in
+          Image(instrument.imageLarge)
+            .resizable()
+            .scaledToFit()
+            .padding(8)
+            .clipShape(Circle())
+            .frame(maxWidth: .infinity, alignment: .center)
+            .tag(instrument)
         }
-        .tabViewStyle(.page(indexDisplayMode: .never))
-        .frame(maxWidth: .infinity)
-        .frame(height: 300)
-//      }
-      .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+      }
+      .tabViewStyle(.page(indexDisplayMode: .never))
+      .frame(maxWidth: .infinity)
       .background(Color(.systemBackground).gradient)
-//      .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-//      .overlay {
-//        RoundedRectangle(cornerRadius: 12, style: .continuous)
-//          .strokeBorder(lineWidth: 2)
-//          .foregroundColor(Color.accentColor)
-//      }
-//      .padding(.horizontal)
       .listRowSeparator(.hidden)
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
   }
 }
@@ -419,8 +418,8 @@ private struct TuningButtons: View {
   
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      VStack {
-        HStack {
+      HStack {
+        VStack {
           ForEach(viewStore.notes) { note in
             Button {
               viewStore.send(.noteButtonTapped(note))
@@ -435,10 +434,11 @@ private struct TuningButtons: View {
             }
             .buttonStyle(.plain)
             .clipShape(Circle())
+            .frame(width: 50, height: 50)
           }
         }
+        Spacer()
       }
-      .frame(height: 50)
     }
   }
 }
