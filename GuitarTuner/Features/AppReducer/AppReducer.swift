@@ -112,6 +112,14 @@ struct AppReducer: Reducer {
 
           
         case let .noteButtonTapped(note):
+          guard !state.isPlayAllInFlight else {
+            return .run { [notes = state.inFlightNotes] send in
+              await send(.cancelPlayAll)
+              for note in notes {
+                await send(.stop(note))
+              }
+            }
+          }
           return .run { [
             inFlight = state.inFlightNotes,
             isRingEnabled = state.isRingEnabled
@@ -406,7 +414,6 @@ private struct TuningButtons: View {
             }
             .buttonStyle(.plain)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .disabled(viewStore.state.isNoteButtonDisabled(note))
           }
         }
       }
