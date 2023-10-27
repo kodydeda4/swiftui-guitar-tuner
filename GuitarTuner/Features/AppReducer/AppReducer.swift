@@ -15,10 +15,10 @@ import DependenciesAdditions
 
 struct AppReducer: Reducer {
   struct State: Equatable {
-    var instrument = SoundClient.Instrument.electric
-    var tuning = SoundClient.InstrumentTuning.eStandard
     var inFlightNotes = IdentifiedArrayOf<Note>()
     var isPlayAllInFlight = false
+    @BindingState var instrument = SoundClient.Instrument.electric
+    @BindingState var tuning = SoundClient.InstrumentTuning.eStandard
     @BindingState var isRingEnabled = false
   }
   
@@ -31,8 +31,6 @@ struct AppReducer: Reducer {
     
     enum View: BindableAction, Equatable {
       case task
-      case setInstrument(SoundClient.Instrument)
-      case setTuning(SoundClient.InstrumentTuning)
       case noteButtonTapped(Note)
       case playAllButtonTapped
       case stopButtonTapped
@@ -119,21 +117,6 @@ struct AppReducer: Reducer {
             }
           }
           
-        case let .setInstrument(value):
-          state.instrument = value
-          let output = UserDefaults.Dependency.Settings.init(from: state)
-          return .run { _ in
-            await self.sound.setInstrument(value)
-            try? userDefaults.set(encode(output), forKey: .settings)
-          }
-          
-        case let .setTuning(value):
-          state.tuning = value
-          let output = UserDefaults.Dependency.Settings.init(from: state)
-          return .run { _ in
-            try? userDefaults.set(encode(output), forKey: .settings)
-          }
-          
         case .binding(.set(\.$isRingEnabled, false)):
           guard !state.inFlightNotes.isEmpty else { return .none }
           return .run { [inFlightNotes = state.inFlightNotes] send in
@@ -144,7 +127,10 @@ struct AppReducer: Reducer {
           }
           
         case .binding:
-          return .none
+          let output = UserDefaults.Dependency.Settings.init(from: state)
+          return .run { _ in
+            try? userDefaults.set(encode(output), forKey: .settings)
+          }
         }
         
       case let .setSettings(value):
@@ -249,10 +235,7 @@ private struct Header: View {
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       Section {
-        TabView(selection: viewStore.binding(
-          get: \.instrument,
-          send: { .setInstrument($0) }
-        )) {
+        TabView(selection: viewStore.$instrument) {
           ForEach(SoundClient.Instrument.allCases) { instrument in
             Image(instrument.imageLarge)
               .resizable()
@@ -285,7 +268,7 @@ private struct InstrumentsView: View {
         HStack {
           ForEach(SoundClient.Instrument.allCases) { instrument in
             Button {
-              viewStore.send(.setInstrument(instrument), animation: .spring())
+              viewStore.send(.binding(.set(\.$instrument, instrument), animation: .spring()))
             } label: {
               VStack {
                 Image(instrument.imageSmall)
@@ -347,7 +330,7 @@ private struct TuningView: View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       let isSelected = viewStore.tuning == tuning
       Button {
-        viewStore.send(.setTuning(tuning))
+        viewStore.send(.binding(.set(\.$tuning, tuning)))
       } label: {
         HStack {
           Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
