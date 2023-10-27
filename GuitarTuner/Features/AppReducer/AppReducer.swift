@@ -4,9 +4,11 @@ import Tonic
 import DependenciesAdditions
 
 // MARK: - Bugs:
-// 1. sound only works when connected to an external audio source.
-// 2. cancel play-all
-// 3. add multiple au instruments
+// 1. cancel play-all
+// 2. add multiple au instruments - acoustic, electric, bass, ukelele
+// 3. fix tuning for ukelele
+// 4. figure out a better layout
+// 5. add animations
 //
 // MARK: - Tutorial:
 // 1. Getting Started - https://youtu.be/JT-0UDZDAsU?si=pYqavx6mxjU4cREO//
@@ -28,12 +30,12 @@ struct AppReducer: Reducer {
     case play(Note)
     case stop(Note)
     case didCompletePlayAll
+    case cancelPlayAll
     
     enum View: BindableAction, Equatable {
       case task
       case noteButtonTapped(Note)
       case playAllButtonTapped
-      case stopButtonTapped
       case binding(BindingAction<State>)
     }
   }
@@ -43,6 +45,10 @@ struct AppReducer: Reducer {
   @Dependency(\.userDefaults) var userDefaults
   @Dependency(\.encode) var encode
   @Dependency(\.decode) var decode
+  
+  enum CancelID: Equatable {
+    case playAll
+  }
   
   var body: some ReducerOf<Self> {
     BindingReducer(action: /Action.view)
@@ -68,7 +74,14 @@ struct AppReducer: Reducer {
           }
           
         case .playAllButtonTapped:
-          guard !state.isPlayAllInFlight else { return .none }
+          guard !state.isPlayAllInFlight else {
+            return .run { [notes = state.inFlightNotes] send in
+              await send(.cancelPlayAll)
+              for note in notes {
+                await send(.stop(note))
+              }
+            }
+          }
           state.isPlayAllInFlight = true
           return .run { [inFlight = state.inFlightNotes, notes = state.notes] send in
             // stop any playing notes
@@ -95,10 +108,8 @@ struct AppReducer: Reducer {
             }
             await send(.didCompletePlayAll)
           }
-          
-        case .stopButtonTapped:
-          state.inFlightNotes = []
-          return .none
+          .cancellable(id: CancelID.playAll.self)
+
           
         case let .noteButtonTapped(note):
           return .run { [
@@ -150,6 +161,11 @@ struct AppReducer: Reducer {
         state.isPlayAllInFlight = false
         return .none
         
+      case .cancelPlayAll:
+        state.isPlayAllInFlight = false
+        state.inFlightNotes = []
+        return .cancel(id: CancelID.playAll.self)
+        
       }
     }
   }
@@ -174,9 +190,9 @@ private extension AppReducer.State {
   var isPlayAllButtonDisabled: Bool {
     isPlayAllInFlight
   }
-  var isStopButtonDisabled: Bool {
-    inFlightNotes.isEmpty
-  }
+//  var isStopButtonDisabled: Bool {
+//    inFlightNotes.isEmpty
+//  }
 }
 
 private extension UserDefaults.Dependency.Settings {
@@ -210,17 +226,12 @@ struct AppView: View {
             TuningButtons(store: store)
               .padding(.bottom)
             
-            Button("Play All") {
+            Button(!viewStore.isPlayAllInFlight ? "Play All" : "Stop") {
               viewStore.send(.playAllButtonTapped)
             }
-            .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .green))
-            .disabled(viewStore.isPlayAllButtonDisabled)
-            
-            Button("Stop") {
-              viewStore.send(.stopButtonTapped)
-            }
-            .buttonStyle(RoundedRectangleButtonStyle())
-            .disabled(viewStore.isStopButtonDisabled)
+            .buttonStyle(RoundedRectangleButtonStyle(
+              backgroundColor: !viewStore.isPlayAllInFlight ? .green : .red
+            ))
           }
         }
       }
