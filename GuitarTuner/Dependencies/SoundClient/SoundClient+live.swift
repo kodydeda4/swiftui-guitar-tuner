@@ -1,15 +1,16 @@
-import AVKit
-import AVFoundation
+import SwiftUI
 import Foundation
+import AVFoundation
+import Tonic
 
 extension SoundClient {
   static var live: Self {
-    let conductor = SoundConductor(instrument: .electric)
+    let conductor = SoundConductor()
     
     return Self(
-      play: { await conductor.play($0.midi) },
-      stop: { await conductor.stop($0.midi) },
-      setInstrument: { await conductor.setInstrument($0) }
+      play: { conductor.play(Pitch(intValue: Int($0.midi))) },
+      stop: { conductor.stop(Pitch(intValue: Int($0.midi))) },
+      setInstrument: { _ in  }
     )
   }
 }
@@ -18,44 +19,30 @@ extension SoundClient {
 
 private extension SoundClient {
   /// Play MIDI through a SoundFont.
-  private final actor SoundConductor {
-    let volume = Float(0.5)
-    let channel = UInt8(1)
-    let velocity = UInt8(80)
-    let audioEngine = AVAudioEngine()
-    let unitSampler = AVAudioUnitSampler()
+  private final class SoundConductor {
+    let engine = AVAudioEngine()
+    var instrument = AVAudioUnitSampler()
+    let instrumentURL = Bundle.main.url(forResource: "Sounds/Instrument1", withExtension: "aupreset")
     
-    func play(_ note: UInt8) {
-      unitSampler.startNote(note, withVelocity: velocity, onChannel: channel)
+    init() {
+      do {
+        engine.attach(instrument)
+        engine.connect(instrument, to: engine.mainMixerNode, format: nil)
+        if let instrumentURL {
+          try? instrument.loadInstrument(at: instrumentURL)
+        }
+        try engine.start()
+      } catch {
+        print(error)
+      }
     }
     
-    func stop(_ note: UInt8) {
-      unitSampler.stopNote(note, onChannel: channel)
+    func play(_ pitch: Pitch) {
+      instrument.startNote(UInt8(pitch.intValue), withVelocity: 127, onChannel: 0)
     }
     
-    func setInstrument(_ newValue: Instrument) {
-      try! unitSampler.loadSoundBankInstrument(
-        at: newValue.soundfontURL,
-        program: 0,
-        bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
-        bankLSB: UInt8(kAUSampler_DefaultBankLSB)
-      )
-    }
-    
-    init(instrument: Instrument) {
-      // AudioEngine
-      audioEngine.mainMixerNode.volume = volume
-      audioEngine.attach(unitSampler)
-      audioEngine.connect(unitSampler, to: audioEngine.mainMixerNode, format: nil)
-      try! audioEngine.start()
-      
-      // UnitSampler
-      try! unitSampler.loadSoundBankInstrument(
-        at: instrument.soundfontURL,
-        program: 0,
-        bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
-        bankLSB: UInt8(kAUSampler_DefaultBankLSB)
-      )
+    func stop(_ pitch: Pitch) {
+      instrument.stopNote(UInt8(pitch.intValue), onChannel: 0)
     }
   }
 }

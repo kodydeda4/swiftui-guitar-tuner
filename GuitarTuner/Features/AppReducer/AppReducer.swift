@@ -28,7 +28,6 @@ struct AppReducer: Reducer {
       case task
       case setInstrument(SoundClient.Instrument)
       case setTuning(SoundClient.InstrumentTuning)
-      
       case noteButtonTapped(SoundClient.Note)
       case playAllButtonTapped
       case stopButtonTapped

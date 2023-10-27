@@ -20,6 +20,9 @@
 		332B301A2AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B30192AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift */; };
 		332B301C2AEAF29400E507E8 /* SoundClient+Instrument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B301B2AEAF29400E507E8 /* SoundClient+Instrument.swift */; };
 		332B301E2AEAF2F300E507E8 /* SoundClient+Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B301D2AEAF2F300E507E8 /* SoundClient+Note.swift */; };
+		337C29B52AEBEEF1004FB6BD /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = 337C29B42AEBEEF1004FB6BD /* Tonic */; };
+		337C29B92AEBF0EB004FB6BD /* saw1.wav in Resources */ = {isa = PBXBuildFile; fileRef = 337C29B72AEBF0EB004FB6BD /* saw1.wav */; };
+		337C29BA2AEBF0EB004FB6BD /* Instrument1.aupreset in Resources */ = {isa = PBXBuildFile; fileRef = 337C29B82AEBF0EB004FB6BD /* Instrument1.aupreset */; };
 		33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D72ADDCC5B00EBC52A /* Main.swift */; };
 		33C200DA2ADDCC5B00EBC52A /* AppReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D92ADDCC5B00EBC52A /* AppReducer.swift */; };
 		33C200DC2ADDCC5D00EBC52A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33C200DB2ADDCC5D00EBC52A /* Assets.xcassets */; };
@@ -52,6 +55,9 @@
 		332B30192AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SoundClient+InstrumentTuning.swift"; sourceTree = "<group>"; };
 		332B301B2AEAF29400E507E8 /* SoundClient+Instrument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SoundClient+Instrument.swift"; sourceTree = "<group>"; };
 		332B301D2AEAF2F300E507E8 /* SoundClient+Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SoundClient+Note.swift"; sourceTree = "<group>"; };
+		3365F7B32AEB2E1000014C39 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		337C29B72AEBF0EB004FB6BD /* saw1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = saw1.wav; sourceTree = "<group>"; };
+		337C29B82AEBF0EB004FB6BD /* Instrument1.aupreset */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Instrument1.aupreset; sourceTree = "<group>"; };
 		33C200D42ADDCC5B00EBC52A /* GuitarTuner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GuitarTuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		33C200D72ADDCC5B00EBC52A /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		33C200D92ADDCC5B00EBC52A /* AppReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReducer.swift; sourceTree = "<group>"; };
@@ -74,6 +80,7 @@
 			files = (
 				3323F6D12AE1C3F300C715B1 /* _CoreDataDependency in Frameworks */,
 				3323F6CF2AE1C3F300C715B1 /* _AppStorageDependency in Frameworks */,
+				337C29B52AEBEEF1004FB6BD /* Tonic in Frameworks */,
 				33C201072ADDCD6B00EBC52A /* ComposableArchitecture in Frameworks */,
 				3323F6D32AE1C3F300C715B1 /* _NotificationDependency in Frameworks */,
 				3323F6CD2AE1C3F300C715B1 /* DependenciesAdditions in Frameworks */,
@@ -141,6 +148,15 @@
 			path = UserDefaultsClient;
 			sourceTree = "<group>";
 		};
+		337C29B62AEBF0EB004FB6BD /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				337C29B72AEBF0EB004FB6BD /* saw1.wav */,
+				337C29B82AEBF0EB004FB6BD /* Instrument1.aupreset */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
 		33C200CB2ADDCC5B00EBC52A = {
 			isa = PBXGroup;
 			children = (
@@ -162,6 +178,8 @@
 		33C200D62ADDCC5B00EBC52A /* GuitarTuner */ = {
 			isa = PBXGroup;
 			children = (
+				337C29B62AEBF0EB004FB6BD /* Sounds */,
+				3365F7B32AEB2E1000014C39 /* Info.plist */,
 				3323F6D92AE1CB8A00C715B1 /* Util */,
 				33C201022ADDCD1D00EBC52A /* Dependencies */,
 				33C201032ADDCD2300EBC52A /* Features */,
@@ -270,6 +288,7 @@
 				3323F6D22AE1C3F300C715B1 /* _NotificationDependency */,
 				3323F6D42AE1C3F300C715B1 /* _SwiftUIDependency */,
 				3323F6D72AE1C52300C715B1 /* Tagged */,
+				337C29B42AEBEEF1004FB6BD /* Tonic */,
 			);
 			productName = GuitarTuner;
 			productReference = 33C200D42ADDCC5B00EBC52A /* GuitarTuner.app */;
@@ -325,6 +344,7 @@
 				33C201052ADDCD6B00EBC52A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				3323F6CB2AE1C3F300C715B1 /* XCRemoteSwiftPackageReference "swift-dependencies-additions" */,
 				3323F6D62AE1C52300C715B1 /* XCRemoteSwiftPackageReference "swift-tagged" */,
+				337C29B32AEBEEF1004FB6BD /* XCRemoteSwiftPackageReference "Tonic" */,
 			);
 			productRefGroup = 33C200D52ADDCC5B00EBC52A /* Products */;
 			projectDirPath = "";
@@ -342,9 +362,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				33D48A0B2AE74AC8000D66C9 /* Acoustic.sf2 in Resources */,
+				337C29B92AEBF0EB004FB6BD /* saw1.wav in Resources */,
 				33D48A0A2AE74AC8000D66C9 /* Electric.sf2 in Resources */,
 				33C200DF2ADDCC5D00EBC52A /* Preview Assets.xcassets in Resources */,
 				33D48A0D2AE74AC8000D66C9 /* Ukelele.sf2 in Resources */,
+				337C29BA2AEBF0EB004FB6BD /* Instrument1.aupreset in Resources */,
 				33D48A0C2AE74AC8000D66C9 /* Bass.sf2 in Resources */,
 				33C200DC2ADDCC5D00EBC52A /* Assets.xcassets in Resources */,
 			);
@@ -527,6 +549,7 @@
 				DEVELOPMENT_TEAM = ME637H7ZM9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GuitarTuner/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -556,6 +579,7 @@
 				DEVELOPMENT_TEAM = ME637H7ZM9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GuitarTuner/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -663,6 +687,14 @@
 				minimumVersion = 0.10.0;
 			};
 		};
+		337C29B32AEBEEF1004FB6BD /* XCRemoteSwiftPackageReference "Tonic" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AudioKit/Tonic";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.10;
+			};
+		};
 		33C201052ADDCD6B00EBC52A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
@@ -703,6 +735,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3323F6D62AE1C52300C715B1 /* XCRemoteSwiftPackageReference "swift-tagged" */;
 			productName = Tagged;
+		};
+		337C29B42AEBEEF1004FB6BD /* Tonic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 337C29B32AEBEEF1004FB6BD /* XCRemoteSwiftPackageReference "Tonic" */;
+			productName = Tonic;
 		};
 		33C201062ADDCD6B00EBC52A /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
