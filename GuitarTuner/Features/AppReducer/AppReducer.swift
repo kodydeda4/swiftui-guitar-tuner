@@ -3,7 +3,7 @@ import ComposableArchitecture
 import Tonic
 import DependenciesAdditions
 
-// MARK: - Bugs:
+// MARK: - Todo:
 // 1. add multiple au instruments - acoustic, electric, bass, ukelele
 // 2. fix tuning for ukelele
 // 3. figure out a better layout
@@ -13,7 +13,6 @@ import DependenciesAdditions
 // 1. Getting Started - https://youtu.be/JT-0UDZDAsU?si=pYqavx6mxjU4cREO//
 // 2. Sounds - https://youtu.be/-z8ire5WN3U?si=BUcTWYK7vAECFebV&t=470
 
-
 struct AppReducer: Reducer {
   struct State: Equatable {
     var inFlightNotes = IdentifiedArrayOf<Note>()
@@ -21,6 +20,7 @@ struct AppReducer: Reducer {
     @BindingState var instrument = SoundClient.Instrument.electric
     @BindingState var tuning = SoundClient.InstrumentTuning.eStandard
     @BindingState var isRingEnabled = false
+    @BindingState var isSheetPresented = false
   }
   
   enum Action: Equatable {
@@ -181,7 +181,7 @@ struct AppReducer: Reducer {
   }
 }
 
-private extension AppReducer.State {
+extension AppReducer.State {
   var navigationTitle: String {
     instrument.rawValue
   }
@@ -220,33 +220,44 @@ struct AppView: View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       NavigationStack {
         List {
-          Header(store: store)
-          InstrumentsView(store: store)
-          RingToggle(store: store)
-          TuningView(store: store)
+          Section {
+            Header(store: store)
+            InstrumentsView(store: store)
+          }
+//          RingToggle(store: store)
+//          TuningView(store: store)
           
           Spacer().frame(height: 255)
         }
         .navigationTitle(viewStore.navigationTitle)
-        .navigationBarTitleDisplayMode(.inline)
         .listStyle(.plain)
         .navigationOverlay {
           VStack {
+            Text("Settings")
+              .font(.title2)
+              .fontWeight(.semibold)
+              .frame(maxWidth: .infinity, alignment: .leading)
             TuningButtons(store: store)
               .padding(.bottom)
-            
-            Group {
-              if !viewStore.isPlayAllInFlight {
-                Button("Play All") {
-                  viewStore.send(.playAllButtonTapped)
+            HStack {
+              Group {
+                if !viewStore.isPlayAllInFlight {
+                  Button("Play All") {
+                    viewStore.send(.playAllButtonTapped)
+                  }
+                  .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .green))
+                } else {
+                  Button("Stop") {
+                    viewStore.send(.stopButtonTapped)
+                  }
+                  .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .red))
                 }
-                .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .green))
-              } else {
-                Button("Stop") {
-                  viewStore.send(.stopButtonTapped)
-                }
-                .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .red))
               }
+              Button("⚙️") {
+                viewStore.send(.stopButtonTapped)
+              }
+              .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: Color(.systemGray)))
+              .frame(width: 50)
             }
           }
         }
@@ -275,10 +286,10 @@ private struct Header: View {
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
         .frame(maxWidth: .infinity)
-        .frame(height: 150)
+        .frame(height: 300)
 //      }
       .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-      //.background(Color(.secondarySystemFill))
+      .background(Color(.systemBackground).gradient)
 //      .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 //      .overlay {
 //        RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -296,49 +307,41 @@ private struct InstrumentsView: View {
   
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      Section {
-        HStack {
-          ForEach(SoundClient.Instrument.allCases) { instrument in
-            Button {
-              viewStore.send(
-                .binding(.set(\.$instrument, instrument)),
-                animation: .spring()
-              )
-            } label: {
-              VStack {
-                Image(instrument.imageSmall)
-                  .resizable()
-                  .scaledToFit()
-                  .frame(width: 75, height: 75)
-                  .frame(maxWidth: .infinity)
-                  .background(.thinMaterial)
-                  .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                  .overlay {
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                      .strokeBorder(lineWidth: 2)
-                      .foregroundColor(.accentColor)
-                      .opacity(viewStore.instrument == instrument ? 1 : 0)
-                  }
-                
-                Text(instrument.description)
-                  .font(.caption)
-                  .foregroundColor(viewStore.instrument == instrument ? .primary : .secondary)
-                  .fontWeight(.semibold)
-              }
-              .frame(maxWidth: .infinity)
-              .tag(instrument.id)
+      HStack {
+        ForEach(SoundClient.Instrument.allCases) { instrument in
+          Button {
+            viewStore.send(
+              .binding(.set(\.$instrument, instrument)),
+              animation: .spring()
+            )
+          } label: {
+            VStack {
+              Image(instrument.imageSmall)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 75, height: 75)
+                .frame(maxWidth: .infinity)
+                .background(.thinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay {
+                  RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(lineWidth: 2)
+                    .foregroundColor(.accentColor)
+                    .opacity(viewStore.instrument == instrument ? 1 : 0)
+                }
+              
+              Text(instrument.description)
+                .font(.caption)
+                .foregroundColor(viewStore.instrument == instrument ? .primary : .secondary)
+                .fontWeight(.semibold)
             }
-            .buttonStyle(.plain)
+            .frame(maxWidth: .infinity)
+            .tag(instrument.id)
           }
+          .buttonStyle(.plain)
         }
-        .frame(maxWidth: .infinity)
-      } header: {
-        Text("Instrument")
-          .font(.title2)
-          .bold()
-          .foregroundStyle(.primary)
       }
-      //.listRowSeparator(.hidden, edges: .bottom)
+      .frame(maxWidth: .infinity)
     }
   }
 }
