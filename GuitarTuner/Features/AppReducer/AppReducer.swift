@@ -227,6 +227,7 @@ struct AppView: View {
           Spacer().frame(height: 255)
         }
         .navigationTitle(viewStore.navigationTitle)
+        .navigationBarTitleDisplayMode(.inline)
         .listStyle(.plain)
         .navigationOverlay {
           VStack {
@@ -416,10 +417,14 @@ private struct TuningButtons: View {
             } label: {
               Text(note.description.prefix(1))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(viewStore.inFlightNotes.contains(note) ? Color.green : Color(.systemGroupedBackground))
+                .background(
+                  viewStore.inFlightNotes.contains(note)
+                  ? Color.green
+                  : Color(.secondarySystemFill)
+                )
             }
             .buttonStyle(.plain)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .clipShape(Circle())
           }
         }
       }
