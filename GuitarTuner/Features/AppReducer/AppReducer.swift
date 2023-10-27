@@ -222,8 +222,9 @@ struct AppView: View {
         List {
           Header(store: store)
           InstrumentsView(store: store)
-          TuningView(store: store)
           RingToggle(store: store)
+          TuningView(store: store)
+          
           Spacer().frame(height: 255)
         }
         .navigationTitle(viewStore.navigationTitle)
@@ -260,7 +261,7 @@ private struct Header: View {
   
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      Section {
+//      Section {
         TabView(selection: viewStore.$instrument) {
           ForEach(SoundClient.Instrument.allCases) { instrument in
             Image(instrument.imageLarge)
@@ -274,12 +275,17 @@ private struct Header: View {
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
         .frame(maxWidth: .infinity)
-        .frame(height: 200)
-      }
+        .frame(height: 150)
+//      }
       .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-      .background(Color.accentColor.gradient)
-      .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-      .padding(.horizontal)
+      //.background(Color(.secondarySystemFill))
+//      .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+//      .overlay {
+//        RoundedRectangle(cornerRadius: 12, style: .continuous)
+//          .strokeBorder(lineWidth: 2)
+//          .foregroundColor(Color.accentColor)
+//      }
+//      .padding(.horizontal)
       .listRowSeparator(.hidden)
     }
   }
@@ -309,7 +315,7 @@ private struct InstrumentsView: View {
                   .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                   .overlay {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                      .strokeBorder(lineWidth: 3)
+                      .strokeBorder(lineWidth: 2)
                       .foregroundColor(.accentColor)
                       .opacity(viewStore.instrument == instrument ? 1 : 0)
                   }
@@ -332,7 +338,7 @@ private struct InstrumentsView: View {
           .bold()
           .foregroundStyle(.primary)
       }
-      .listRowSeparator(.hidden, edges: .bottom)
+      //.listRowSeparator(.hidden, edges: .bottom)
     }
   }
 }
@@ -388,7 +394,8 @@ private struct RingToggle: View {
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       Section {
-        EmptyView()
+        Text("Allow the note to ring until you tell it stop.")
+          .foregroundStyle(.secondary)
       } header: {
         VStack(alignment: .leading) {
           Toggle(isOn: viewStore.$isRingEnabled) {
@@ -397,7 +404,6 @@ private struct RingToggle: View {
               .bold()
               .foregroundColor(.primary)
           }
-          Text("Allow the note to ring until you tell it stop.")
         }
       }
     }
