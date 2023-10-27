@@ -224,8 +224,9 @@ struct AppView: View {
             Header(store: store)
             InstrumentsView(store: store)
           }
-//          RingToggle(store: store)
-//          TuningView(store: store)
+          .padding(.bottom)
+          RingToggle(store: store)
+          TuningView(store: store)
           
           Spacer().frame(height: 255)
         }
