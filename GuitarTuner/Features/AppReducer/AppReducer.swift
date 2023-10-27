@@ -19,7 +19,7 @@ struct AppReducer: Reducer {
     var isPlayAllInFlight = false
     @BindingState var instrument = SoundClient.Instrument.electric
     @BindingState var tuning = SoundClient.InstrumentTuning.eStandard
-    @BindingState var isRingEnabled = false
+    @BindingState var isLoopNoteEnabled = false
     @BindingState var isSheetPresented = false
   }
   
@@ -113,30 +113,30 @@ struct AppReducer: Reducer {
           
         case let .noteButtonTapped(note):
           guard !state.isPlayAllInFlight else {
-            return .run { [notes = state.inFlightNotes] send in
+            return .run { [inFlightNotes = state.inFlightNotes] send in
               await send(.cancelPlayAll)
-              for note in notes {
+              for note in inFlightNotes {
                 await send(.stop(note))
               }
             }
           }
           return .run { [
-            inFlight = state.inFlightNotes,
-            isRingEnabled = state.isRingEnabled
+            inFlightNotes = state.inFlightNotes,
+            isLoopEnabled = state.isLoopNoteEnabled
           ] send in
-            for inFlightNote in inFlight {
+            for inFlightNote in inFlightNotes {
               await send(.stop(inFlightNote))
             }
-            if !inFlight.contains(note) {
+            if !inFlightNotes.contains(note) {
               await send(.play(note))
             }
-            if !isRingEnabled {
+            if !isLoopEnabled {
               try await clock.sleep(for: .seconds(2))
               await send(.stop(note))
             }
           }
           
-        case .binding(.set(\.$isRingEnabled, false)):
+        case .binding(.set(\.$isLoopNoteEnabled, false)):
           guard !state.inFlightNotes.isEmpty else { return .none }
           return .run { [inFlightNotes = state.inFlightNotes] send in
             for note in inFlightNotes {
@@ -264,12 +264,31 @@ struct AppView: View {
         .sheet(isPresented: viewStore.$isSheetPresented) {
           NavigationStack {
             List {
-              RingToggle(store: store)
-              TuningView(store: store)
+              Section {
+                Toggle("Loop Note", isOn: viewStore.$isLoopNoteEnabled)
+              } footer: {
+                Text("Play the note until you stop it.")
+              }
+              
+              Section("Tuning") {
+                Picker(selection: viewStore.$tuning, label: EmptyView()) {
+                  ForEach(SoundClient.InstrumentTuning.allCases) { tuning in
+                    Text(tuning.description)
+                      .tag(tuning)
+                  }
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+              }
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("Settings")
+            .toolbar {
+              Button("Done") {
+                viewStore.send(.binding(.set(\.$isSheetPresented, false)))
+              }
+            }
           }
-          //.presentationDetents([.height(300)])
         }
       }
       .task { await viewStore.send(.task).finish() }
@@ -350,73 +369,6 @@ private struct InstrumentsView: View {
   }
 }
 
-private struct TuningView: View {
-  let store: StoreOf<AppReducer>
-  
-  var body: some View {
-    WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      Section {
-        ForEach(SoundClient.InstrumentTuning.allCases) { tuning in
-          btn(tuning)
-        }
-      } header: {
-        Text("Tuning")
-          .font(.title2)
-          .bold()
-          .foregroundStyle(.primary)
-      }
-    }
-  }
-  
-  private func btn(_ tuning: SoundClient.InstrumentTuning) -> some View {
-    WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      let isSelected = viewStore.tuning == tuning
-      Button {
-        viewStore.send(.binding(.set(\.$tuning, tuning)))
-      } label: {
-        HStack {
-          Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-            .foregroundColor(isSelected ? .accentColor : .secondary)
-            .background { Color.white.opacity(isSelected ? 1 : 0) }
-            .clipShape(Circle())
-            .overlay {
-              Circle()
-                .strokeBorder()
-                .foregroundColor(.accentColor)
-                .opacity(isSelected ? 1 : 0)
-            }
-          
-          Text(tuning.description)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background { Color.pink.opacity(0.000001) }
-      }
-    }
-  }
-}
-
-private struct RingToggle: View {
-  let store: StoreOf<AppReducer>
-  
-  var body: some View {
-    WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      Section {
-        Text("Allow the note to ring until you tell it stop.")
-          .foregroundStyle(.secondary)
-      } header: {
-        VStack(alignment: .leading) {
-          Toggle(isOn: viewStore.$isRingEnabled) {
-            Text("Ring")
-              .font(.title2)
-              .bold()
-              .foregroundColor(.primary)
-          }
-        }
-      }
-    }
-  }
-}
-
 private struct TuningButtons: View {
   let store: StoreOf<AppReducer>
   
@@ -451,7 +403,10 @@ private struct TuningButtons: View {
 
 #Preview {
   AppView(store: Store(
-    initialState: AppReducer.State(instrument: .electric),
+    initialState: AppReducer.State(
+      instrument: .electric,
+      isSheetPresented: true
+    ),
     reducer: AppReducer.init
   ))
 }
