@@ -17,7 +17,7 @@ struct AppReducer: Reducer {
   struct State: Equatable {
     var instrument = SoundClient.Instrument.electric
     var tuning = SoundClient.InstrumentTuning.eStandard
-    var inFlight: Note?
+    var inFlightNotes = IdentifiedArrayOf<Note>()
     var isPlayAllInFlight = false
     @BindingState var isRingEnabled = false
   }
@@ -72,10 +72,10 @@ struct AppReducer: Reducer {
         case .playAllButtonTapped:
           guard !state.isPlayAllInFlight else { return .none }
           state.isPlayAllInFlight = true
-          return .run { [inFlight = state.inFlight, notes = state.notes] send in
+          return .run { [inFlight = state.inFlightNotes, notes = state.notes] send in
             // stop any playing notes
-            if let inFlight {
-              await send(.stop(inFlight))
+            for inFlightNote in inFlight {
+              await send(.stop(inFlightNote))
             }
             // play all the notes at a normal speed
             for note in notes {
@@ -99,18 +99,18 @@ struct AppReducer: Reducer {
           }
           
         case .stopButtonTapped:
-          state.inFlight = nil
+          state.inFlightNotes = []
           return .none
           
         case let .noteButtonTapped(note):
           return .run { [
-            inFlight = state.inFlight,
+            inFlight = state.inFlightNotes,
             isRingEnabled = state.isRingEnabled
           ] send in
-            if let inFlight {
-              await send(.stop(inFlight))
+            for inFlightNote in inFlight {
+              await send(.stop(inFlightNote))
             }
-            if note != inFlight {
+            if !inFlight.contains(note) {
               await send(.play(note))
             }
             if !isRingEnabled {
@@ -135,10 +135,12 @@ struct AppReducer: Reducer {
           }
           
         case .binding(.set(\.$isRingEnabled, false)):
-          guard let inFlight = state.inFlight else { return .none }
-          return .run { send in
-            try await clock.sleep(for: .seconds(1))
-            await send(.stop(inFlight))
+          guard !state.inFlightNotes.isEmpty else { return .none }
+          return .run { [inFlightNotes = state.inFlightNotes] send in
+            for note in inFlightNotes {
+              try await clock.sleep(for: .seconds(1))
+              await send(.stop(note))
+            }
           }
           
         case .binding:
@@ -151,11 +153,11 @@ struct AppReducer: Reducer {
         return .none
         
       case let .play(note):
-        state.inFlight = note
+        state.inFlightNotes.append(note)
         return .run { _ in await sound.play(note) }
         
       case let .stop(note):
-        state.inFlight = nil
+        state.inFlightNotes.remove(id: note.id)
         return .run { _ in await sound.stop(note) }
         
       case .didCompletePlayAll:
@@ -187,7 +189,7 @@ private extension AppReducer.State {
     isPlayAllInFlight
   }
   var isStopButtonDisabled: Bool {
-    inFlight == nil
+    inFlightNotes.isEmpty
   }
 }
 
@@ -403,7 +405,7 @@ private struct TuningButtons: View {
             } label: {
               Text(note.description.prefix(1))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(viewStore.inFlight == note ? Color.green : Color(.systemGroupedBackground))
+                .background(viewStore.inFlightNotes.contains(note) ? Color.green : Color(.systemGroupedBackground))
             }
             .buttonStyle(.plain)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
