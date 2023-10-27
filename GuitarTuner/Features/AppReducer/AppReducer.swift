@@ -268,7 +268,10 @@ private struct InstrumentsView: View {
         HStack {
           ForEach(SoundClient.Instrument.allCases) { instrument in
             Button {
-              viewStore.send(.binding(.set(\.$instrument, instrument), animation: .spring()))
+              viewStore.send(
+                .binding(.set(\.$instrument, instrument)),
+                animation: .spring()
+              )
             } label: {
               VStack {
                 Image(instrument.imageSmall)
