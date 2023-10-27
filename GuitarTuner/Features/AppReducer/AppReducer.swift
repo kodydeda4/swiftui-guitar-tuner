@@ -4,11 +4,10 @@ import Tonic
 import DependenciesAdditions
 
 // MARK: - Bugs:
-// 1. cancel play-all
-// 2. add multiple au instruments - acoustic, electric, bass, ukelele
-// 3. fix tuning for ukelele
-// 4. figure out a better layout
-// 5. add animations
+// 1. add multiple au instruments - acoustic, electric, bass, ukelele
+// 2. fix tuning for ukelele
+// 3. figure out a better layout
+// 4. add animations
 //
 // MARK: - Tutorial:
 // 1. Getting Started - https://youtu.be/JT-0UDZDAsU?si=pYqavx6mxjU4cREO//
@@ -36,6 +35,7 @@ struct AppReducer: Reducer {
       case task
       case noteButtonTapped(Note)
       case playAllButtonTapped
+      case stopButtonTapped
       case binding(BindingAction<State>)
     }
   }
@@ -74,14 +74,7 @@ struct AppReducer: Reducer {
           }
           
         case .playAllButtonTapped:
-          guard !state.isPlayAllInFlight else {
-            return .run { [notes = state.inFlightNotes] send in
-              await send(.cancelPlayAll)
-              for note in notes {
-                await send(.stop(note))
-              }
-            }
-          }
+          guard !state.isPlayAllInFlight else { return .none }
           state.isPlayAllInFlight = true
           return .run { [inFlight = state.inFlightNotes, notes = state.notes] send in
             // stop any playing notes
@@ -109,7 +102,14 @@ struct AppReducer: Reducer {
             await send(.didCompletePlayAll)
           }
           .cancellable(id: CancelID.playAll.self)
-
+          
+        case .stopButtonTapped:
+          return .run { [notes = state.inFlightNotes] send in
+            await send(.cancelPlayAll)
+            for note in notes {
+              await send(.stop(note))
+            }
+          }
           
         case let .noteButtonTapped(note):
           guard !state.isPlayAllInFlight else {
@@ -146,9 +146,11 @@ struct AppReducer: Reducer {
           }
           
         case .binding:
-          let output = UserDefaults.Dependency.Settings.init(from: state)
-          return .run { _ in
-            try? userDefaults.set(encode(output), forKey: .settings)
+          return .run { [state = state] _ in
+            try? userDefaults.set(
+              encode(UserDefaults.Dependency.Settings.init(from: state)),
+              forKey: .settings
+            )
           }
         }
         
@@ -198,9 +200,6 @@ private extension AppReducer.State {
   var isPlayAllButtonDisabled: Bool {
     isPlayAllInFlight
   }
-//  var isStopButtonDisabled: Bool {
-//    inFlightNotes.isEmpty
-//  }
 }
 
 private extension UserDefaults.Dependency.Settings {
@@ -234,12 +233,19 @@ struct AppView: View {
             TuningButtons(store: store)
               .padding(.bottom)
             
-            Button(!viewStore.isPlayAllInFlight ? "Play All" : "Stop") {
-              viewStore.send(.playAllButtonTapped)
+            Group {
+              if !viewStore.isPlayAllInFlight {
+                Button("Play All") {
+                  viewStore.send(.playAllButtonTapped)
+                }
+                .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .green))
+              } else {
+                Button("Stop") {
+                  viewStore.send(.stopButtonTapped)
+                }
+                .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .red))
+              }
             }
-            .buttonStyle(RoundedRectangleButtonStyle(
-              backgroundColor: !viewStore.isPlayAllInFlight ? .green : .red
-            ))
           }
         }
       }
