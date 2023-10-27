@@ -5,7 +5,7 @@ import Tonic
 
 extension SoundClient {
   static var live: Self {
-    let conductor = SoundConductor()
+    let conductor = Conductor()
     
     return Self(
       play: { conductor.play(Pitch(intValue: Int($0.midi))) },
@@ -17,32 +17,29 @@ extension SoundClient {
 
 // MARK: - Private Implementation
 
-private extension SoundClient {
-  /// Play MIDI through a SoundFont.
-  private final class SoundConductor {
-    let engine = AVAudioEngine()
-    var instrument = AVAudioUnitSampler()
-    let instrumentURL = Bundle.main.url(forResource: "Sounds/Instrument1", withExtension: "aupreset")
-    
-    init() {
-      do {
-        engine.attach(instrument)
-        engine.connect(instrument, to: engine.mainMixerNode, format: nil)
-        if let instrumentURL {
-          try? instrument.loadInstrument(at: instrumentURL)
-        }
-        try engine.start()
-      } catch {
-        print(error)
+private final class Conductor {
+  let engine = AVAudioEngine()
+  var instrument = AVAudioUnitSampler()
+  let instrumentURL = Bundle.main.url(forResource: "Sounds/Instrument1", withExtension: "aupreset")
+  
+  init() {
+    do {
+      engine.attach(instrument)
+      engine.connect(instrument, to: engine.mainMixerNode, format: nil)
+      if let instrumentURL {
+        try? instrument.loadInstrument(at: instrumentURL)
       }
+      try engine.start()
+    } catch {
+      print(error)
     }
-    
-    func play(_ pitch: Pitch) {
-      instrument.startNote(UInt8(pitch.intValue), withVelocity: 127, onChannel: 0)
-    }
-    
-    func stop(_ pitch: Pitch) {
-      instrument.stopNote(UInt8(pitch.intValue), onChannel: 0)
-    }
+  }
+  
+  func play(_ pitch: Pitch) {
+    instrument.startNote(UInt8(pitch.intValue), withVelocity: 127, onChannel: 0)
+  }
+  
+  func stop(_ pitch: Pitch) {
+    instrument.stopNote(UInt8(pitch.intValue), onChannel: 0)
   }
 }
