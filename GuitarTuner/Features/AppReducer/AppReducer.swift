@@ -181,7 +181,6 @@ private extension AppReducer.State {
     }
   }
   func isNoteButtonDisabled(_ note: Note) -> Bool {
-    //inFlight == note || isPlayAllInFlight
     isPlayAllInFlight
   }
   var isPlayAllButtonDisabled: Bool {
@@ -214,22 +213,28 @@ struct AppView: View {
           InstrumentsView(store: store)
           TuningView(store: store)
           RingToggle(store: store)
-          TuningButtons(store: store)
-          
-          Button("Play All") {
-            viewStore.send(.playAllButtonTapped)
-          }
-          .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .green))
-          .disabled(viewStore.isPlayAllButtonDisabled)
-          
-          Button("Stop") {
-            viewStore.send(.stopButtonTapped)
-          }
-          .buttonStyle(RoundedRectangleButtonStyle())
-          .disabled(viewStore.isStopButtonDisabled)
+          Spacer().frame(height: 255)
         }
         .navigationTitle(viewStore.navigationTitle)
         .listStyle(.plain)
+        .navigationOverlay {
+          VStack {
+            TuningButtons(store: store)
+              .padding(.bottom)
+            
+            Button("Play All") {
+              viewStore.send(.playAllButtonTapped)
+            }
+            .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .green))
+            .disabled(viewStore.isPlayAllButtonDisabled)
+            
+            Button("Stop") {
+              viewStore.send(.stopButtonTapped)
+            }
+            .buttonStyle(RoundedRectangleButtonStyle())
+            .disabled(viewStore.isStopButtonDisabled)
+          }
+        }
       }
       .task { await viewStore.send(.task).finish() }
     }
