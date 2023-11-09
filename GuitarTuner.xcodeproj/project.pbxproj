@@ -55,7 +55,7 @@
 		3363E6A92AFD7EAB009A73D4 /* Acoustic.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Acoustic.sf2; sourceTree = "<group>"; };
 		3363E6AA2AFD7EBB009A73D4 /* Electric.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Electric.sf2; sourceTree = "<group>"; };
 		3363E6AD2AFD8646009A73D4 /* Metal.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Metal.sf2; sourceTree = "<group>"; };
-		3365F7B32AEB2E1000014C39 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3365F7B32AEB2E1000014C39 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		337C29BB2AEBF418004FB6BD /* Tonic+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tonic+.swift"; sourceTree = "<group>"; };
 		33C200D42ADDCC5B00EBC52A /* GuitarTuner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GuitarTuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		33C200D72ADDCC5B00EBC52A /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
@@ -166,12 +166,11 @@
 		33C200D62ADDCC5B00EBC52A /* GuitarTuner */ = {
 			isa = PBXGroup;
 			children = (
-				3365F7B32AEB2E1000014C39 /* Info.plist */,
-				3323F6D92AE1CB8A00C715B1 /* Util */,
 				33C201022ADDCD1D00EBC52A /* Dependencies */,
 				33C201032ADDCD2300EBC52A /* Features */,
 				33C201012ADDCD1700EBC52A /* Resources */,
 				330107282ADEFE2E00102264 /* SwiftUI */,
+				3323F6D92AE1CB8A00C715B1 /* Util */,
 			);
 			path = GuitarTuner;
 			sourceTree = "<group>";
@@ -195,10 +194,11 @@
 		33C201012ADDCD1700EBC52A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				33C201042ADDCD3800EBC52A /* Soundfonts */,
-				33C200DD2ADDCC5D00EBC52A /* Preview Content */,
 				33C200DB2ADDCC5D00EBC52A /* Assets.xcassets */,
+				3365F7B32AEB2E1000014C39 /* Info.plist */,
 				33C200D72ADDCC5B00EBC52A /* Main.swift */,
+				33C200DD2ADDCC5D00EBC52A /* Preview Content */,
+				33C201042ADDCD3800EBC52A /* Soundfonts */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -206,8 +206,8 @@
 		33C201022ADDCD1D00EBC52A /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
-				332B30162AEAF21F00E507E8 /* UserDefaultsClient */,
 				33C201102ADDD55E00EBC52A /* SoundClient */,
+				332B30162AEAF21F00E507E8 /* UserDefaultsClient */,
 			);
 			path = Dependencies;
 			sourceTree = "<group>";
@@ -533,7 +533,7 @@
 				DEVELOPMENT_TEAM = ME637H7ZM9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = GuitarTuner/Info.plist;
+				INFOPLIST_FILE = GuitarTuner/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -563,7 +563,7 @@
 				DEVELOPMENT_TEAM = ME637H7ZM9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = GuitarTuner/Info.plist;
+				INFOPLIST_FILE = GuitarTuner/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
