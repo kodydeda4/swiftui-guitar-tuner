@@ -18,9 +18,9 @@ struct AppReducer: Reducer {
   struct State: Equatable {
     var instrument = SoundClient.Instrument.electric
     var tuning = SoundClient.InstrumentTuning.eStandard
-    var isSheetPresented = false
     var inFlightNotes = IdentifiedArrayOf<Note>()
     var isPlayAllInFlight = false
+    var isSheetPresented = false
   }
   
   enum Action: Equatable {
