@@ -2,10 +2,10 @@ import Foundation
 
 extension SoundClient {
   enum Instrument: String, Equatable, Codable, CaseIterable {
-    case acoustic = "Acoustic"
+    case metal = "Metal"
     case electric = "Electric"
+    case acoustic = "Acoustic"
     case bass = "Bass"
-    case ukelele = "Ukelele"
   }
 }
 
@@ -22,28 +22,28 @@ extension SoundClient.Instrument: CustomStringConvertible {
 extension SoundClient.Instrument {
   var imageLarge: ImageResource {
     switch self {
-    case .acoustic: return .acoustic
+    case .metal: return .metal
     case .electric: return .electric
+    case .acoustic: return .acoustic
     case .bass: return .bass
-    case .ukelele: return .ukelele
     }
   }
   
   var imageSmall: ImageResource {
     switch self {
-    case .acoustic: return .acousticThumbnail
+    case .metal: return .metalThumbnail
     case .electric: return .electricThumbnail
+    case .acoustic: return .acousticThumbnail
     case .bass: return .bassThumbnail
-    case .ukelele: return .uekeleThumbnail
     }
   }
   
-  var soundfontURL: URL? {
+  var soundfontURL: URL {
     switch self {
+    case .metal: Bundle.main.url(forResource: "Metal", withExtension: "sf2")!
     case .electric: Bundle.main.url(forResource: "Electric", withExtension: "sf2")!
     case .acoustic: Bundle.main.url(forResource: "Acoustic", withExtension: "sf2")!
     case .bass: Bundle.main.url(forResource: "Bass", withExtension: "sf2")!
-    case .ukelele: Bundle.main.url(forResource: "Ukelele", withExtension: "sf2")!
     }
   }
 }

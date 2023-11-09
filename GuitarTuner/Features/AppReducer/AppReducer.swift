@@ -4,7 +4,7 @@ import Tonic
 import DependenciesAdditions
 
 // MARK: - Todo:
-// 1. fix tuning for ukelele
+// 1. replace ukelele with distorted guitar
 // 2. better images
 // 3. figure out a better layout
 // 4. readme
@@ -194,7 +194,7 @@ struct AppReducer: Reducer {
 
 extension AppReducer.State {
   var navigationTitle: String {
-    instrument.rawValue
+    instrument.description
   }
   var notes: [Note] {
     switch instrument {

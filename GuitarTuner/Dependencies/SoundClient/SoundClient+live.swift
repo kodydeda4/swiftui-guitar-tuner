@@ -26,17 +26,12 @@ private final class Conductor {
       engine.mainMixerNode.volume = 1
       engine.attach(sampler)
       engine.connect(sampler, to: engine.mainMixerNode, format: nil)
-      if let instrumentURL {
-        //try? instrument.loadInstrument(at: instrumentURL)
-        try? sampler.loadSoundBankInstrument(
-          at: instrumentURL,
-          program: 0,
-          bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
-          bankLSB: UInt8(kAUSampler_DefaultBankLSB)
-        )
-      } else {
-        print("Failed to load instrument.")
-      }
+      try? sampler.loadSoundBankInstrument(
+        at: instrumentURL,
+        program: 0,
+        bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
+        bankLSB: UInt8(kAUSampler_DefaultBankLSB)
+      )
       try engine.start()
     } catch {
       print(error)
@@ -53,16 +48,11 @@ private final class Conductor {
   
   func setInstrument(_ newValue: SoundClient.Instrument) {
     self.instrumentURL = newValue.soundfontURL
-    if let instrumentURL = newValue.soundfontURL {
-      //try? instrument.loadInstrument(at: instrumentURL)
-      try? sampler.loadSoundBankInstrument(
-        at: instrumentURL,
-        program: 0,
-        bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
-        bankLSB: UInt8(kAUSampler_DefaultBankLSB)
-      )
-    } else {
-      print("Failed to load instrument.")
-    }
+    try? sampler.loadSoundBankInstrument(
+      at: newValue.soundfontURL,
+      program: 0,
+      bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
+      bankLSB: UInt8(kAUSampler_DefaultBankLSB)
+    )
   }
 }
