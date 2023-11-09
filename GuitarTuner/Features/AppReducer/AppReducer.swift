@@ -29,7 +29,7 @@ struct AppReducer: Reducer {
     case playAllCancel
     case playAllDidComplete
     case saveSettings
-    case loadSettings(UserDefaultsClient.Settings)
+    case loadSettingsResult(UserDefaultsClient.Settings)
     case view(View)
     
     enum View: Equatable {
@@ -81,7 +81,7 @@ struct AppReducer: Reducer {
         )
       }
       
-    case let .loadSettings(value):
+    case let .loadSettingsResult(value):
       state.instrument = value.instrument
       state.tuning = value.tuning
       return .run { _ in await self.sound.setInstrument(value.instrument) }
@@ -97,7 +97,7 @@ struct AppReducer: Reducer {
                 if let value = data.flatMap({
                   try? decode(UserDefaultsClient.Settings.self, from: $0)
                 }) {
-                  await send(.loadSettings(value))
+                  await send(.loadSettingsResult(value))
                 }
               }
             }
