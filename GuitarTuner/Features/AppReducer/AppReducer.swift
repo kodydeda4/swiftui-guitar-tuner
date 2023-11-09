@@ -398,10 +398,7 @@ private extension AppView {
 
 #Preview {
   AppView(store: Store(
-    initialState: AppReducer.State(
-      instrument: .electric,
-      isSheetPresented: false
-    ),
+    initialState: AppReducer.State(),
     reducer: AppReducer.init
   ))
 }
