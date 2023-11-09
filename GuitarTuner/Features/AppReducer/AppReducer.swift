@@ -18,19 +18,18 @@ struct AppReducer: Reducer {
   struct State: Equatable {
     var inFlightNotes = IdentifiedArrayOf<Note>()
     var isPlayAllInFlight = false
-    
-    var instrument = SoundClient.Instrument.electric
+    @BindingState var instrument = SoundClient.Instrument.electric
     @BindingState var tuning = SoundClient.InstrumentTuning.eStandard
     @BindingState var isLoopNoteEnabled = false
     @BindingState var isSheetPresented = false
   }
   
   enum Action: Equatable {
-    case setSettings(UserDefaultsClient.Settings)
     case play(Note)
     case stop(Note)
-    case didCompletePlayAll
-    case cancelPlayAll
+    case playAllCancel
+    case playAllDidComplete
+    case setSettings(UserDefaultsClient.Settings)
     case view(View)
     
     enum View: BindableAction, Equatable {
@@ -73,14 +72,14 @@ struct AppReducer: Reducer {
         state.inFlightNotes.remove(id: note.id)
         return .run { _ in await sound.stop(note) }
         
-      case .didCompletePlayAll:
-        state.isPlayAllInFlight = false
-        return .none
-        
-      case .cancelPlayAll:
+      case .playAllCancel:
         state.isPlayAllInFlight = false
         state.inFlightNotes = []
         return .cancel(id: CancelID.playAll.self)
+        
+      case .playAllDidComplete:
+        state.isPlayAllInFlight = false
+        return .none
         
       case let .view(action):
         switch action {
@@ -126,13 +125,13 @@ struct AppReducer: Reducer {
               try await clock.sleep(for: .seconds(1))
               await send(.stop(last))
             }
-            await send(.didCompletePlayAll)
+            await send(.playAllDidComplete)
           }
           .cancellable(id: CancelID.playAll.self)
           
         case .stopButtonTapped:
           return .run { [notes = state.inFlightNotes] send in
-            await send(.cancelPlayAll)
+            await send(.playAllCancel)
             for note in notes {
               await send(.stop(note))
             }
@@ -141,7 +140,7 @@ struct AppReducer: Reducer {
         case let .noteButtonTapped(note):
           guard !state.isPlayAllInFlight else {
             return .run { [inFlightNotes = state.inFlightNotes] send in
-              await send(.cancelPlayAll)
+              await send(.playAllCancel)
               for note in inFlightNotes {
                 await send(.stop(note))
               }
@@ -167,7 +166,7 @@ struct AppReducer: Reducer {
           state.instrument = value
           return .run { send in
             await self.sound.setInstrument(value)
-            await send(.cancelPlayAll)
+            await send(.playAllCancel)
           }
           
         case .binding(.set(\.$isLoopNoteEnabled, false)):
