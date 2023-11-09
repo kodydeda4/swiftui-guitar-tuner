@@ -228,12 +228,6 @@ struct AppView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationTitle(viewStore.navigationTitle)
-        .listStyle(.plain)
-        .toolbar {
-          Button("Settings") {
-            viewStore.send(.setIsSheetPresented(false))
-          }
-        }
         .sheet(
           isPresented: viewStore.binding(get: \.isSheetPresented, send: { .setIsSheetPresented($0) }),
           content: { sheet }
