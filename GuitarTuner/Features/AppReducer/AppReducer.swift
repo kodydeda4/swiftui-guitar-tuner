@@ -174,13 +174,13 @@ struct AppReducer: Reducer {
   }
 }
 
-extension AppReducer.State {
+private extension AppReducer.State {
   var navigationTitle: String {
     instrument.description
   }
   var notes: [Note] {
     switch instrument {
-    
+      
     case .bass:
       Array(tuning.notes.prefix(upTo: 4))
       
@@ -212,42 +212,14 @@ struct AppView: View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       NavigationStack {
         VStack {
-          ZStack {
-            Header(store: store)
-            TuningButtons(store: store)
-              .padding()
-          }
-          //.frame(height: 300)
-
+          header
+          
           VStack {
-            InstrumentsView(store: store)
+            instruments
               .padding(.vertical)
-            HStack {
-              Group {
-                if !viewStore.isPlayAllInFlight {
-                  Button("Play All") {
-                    viewStore.send(.playAllButtonTapped)
-                  }
-                  .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .green))
-                  .frame(height: 50)
-                } else {
-                  Button("Stop") {
-                    viewStore.send(.stopButtonTapped)
-                  }
-                  .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .red))
-                  .frame(height: 50)
-                }
-              }
-              Button {
-                viewStore.send(.binding(.set(\.$isSheetPresented, true)))
-              } label: {
-                Image(systemName: "gear")
-                  .resizable()
-                  .scaledToFit()
-              }
-              .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: Color(.systemGray)))
-              .frame(width: 50, height: 50)
-            }
+            tuningButtons
+              .padding(.bottom)
+            footer
           }
           .padding()
         }
@@ -259,39 +231,15 @@ struct AppView: View {
             viewStore.send(.binding(.set(\.$isSheetPresented, true)))
           }
         }
-        .sheet(isPresented: viewStore.$isSheetPresented) {
-          NavigationStack {
-            List {
-              Section("Tuning") {
-                Picker(selection: viewStore.$tuning, label: EmptyView()) {
-                  ForEach(SoundClient.InstrumentTuning.allCases) { tuning in
-                    Text(tuning.description)
-                      .tag(tuning)
-                  }
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
-              }
-            }
-            .listStyle(.insetGrouped)
-            .navigationTitle("Settings")
-            .toolbar {
-              Button("Done") {
-                viewStore.send(.binding(.set(\.$isSheetPresented, false)))
-              }
-            }
-          }
-        }
+        .sheet(isPresented: viewStore.$isSheetPresented, content: { sheet })
       }
       .task { await viewStore.send(.task).finish() }
     }
   }
 }
 
-private struct Header: View {
-  let store: StoreOf<AppReducer>
-  
-  var body: some View {
+private extension AppView {
+  private var header: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       TabView(selection: viewStore.binding(get: \.instrument, send: { .setInstrument($0) })) {
         ForEach(SoundClient.Instrument.allCases) { instrument in
@@ -314,12 +262,8 @@ private struct Header: View {
       .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
   }
-}
-
-private struct InstrumentsView: View {
-  let store: StoreOf<AppReducer>
   
-  var body: some View {
+  private var instruments: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       HStack {
         ForEach(SoundClient.Instrument.allCases) { instrument in
@@ -355,33 +299,91 @@ private struct InstrumentsView: View {
       .frame(maxWidth: .infinity)
     }
   }
-}
-
-private struct TuningButtons: View {
-  let store: StoreOf<AppReducer>
   
-  var body: some View {
+  private var tuningButtons: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       HStack {
-        VStack {
-          ForEach(viewStore.notes) { note in
-            Button {
-              viewStore.send(.noteButtonTapped(note))
-            } label: {
+        ForEach(viewStore.notes) { note in
+          Button {
+            viewStore.send(.noteButtonTapped(note))
+          } label: {
+            VStack {
               Text(note.description.prefix(1))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(
-                  viewStore.inFlightNotes.contains(note)
-                  ? Color.green
-                  : Color(.secondarySystemFill)
-                )
+                .foregroundColor(viewStore.inFlightNotes.contains(note) ? Color.white : .primary)
+                .background(viewStore.inFlightNotes.contains(note) ? Color.accentColor : Color(.systemGray6))
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay {
+                  RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(lineWidth: 2)
+                    .foregroundColor(.accentColor)
+                    .opacity(viewStore.inFlightNotes.contains(note) ? 1 : 0)
+                }
+                .frame(width: 50, height: 50)
             }
-            .buttonStyle(.plain)
-            .clipShape(Circle())
-            .frame(width: 50, height: 50)
+            .frame(maxWidth: .infinity)
+          }
+          .buttonStyle(.plain)
+          
+        }
+      }
+    }
+  }
+  
+  private var footer: some View {
+    WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
+      HStack {
+        Group {
+          if !viewStore.isPlayAllInFlight {
+            Button("Play All") {
+              viewStore.send(.playAllButtonTapped)
+            }
+            .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .green))
+            .frame(height: 50)
+          } else {
+            Button("Stop") {
+              viewStore.send(.stopButtonTapped)
+            }
+            .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .red))
+            .frame(height: 50)
           }
         }
-        Spacer()
+        Button {
+          viewStore.send(.binding(.set(\.$isSheetPresented, true)))
+        } label: {
+          Image(systemName: "gear")
+            .resizable()
+            .scaledToFit()
+        }
+        .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: Color(.systemGray)))
+        .frame(width: 50, height: 50)
+      }
+    }
+  }
+  
+  @MainActor
+  private var sheet: some View {
+    WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
+      NavigationStack {
+        List {
+          Section("Tuning") {
+            Picker(selection: viewStore.$tuning, label: EmptyView()) {
+              ForEach(SoundClient.InstrumentTuning.allCases) { tuning in
+                Text(tuning.description)
+                  .tag(tuning)
+              }
+            }
+            .pickerStyle(.inline)
+            .labelsHidden()
+          }
+        }
+        .listStyle(.insetGrouped)
+        .navigationTitle("Settings")
+        .toolbar {
+          Button("Done") {
+            viewStore.send(.binding(.set(\.$isSheetPresented, false)))
+          }
+        }
       }
     }
   }
