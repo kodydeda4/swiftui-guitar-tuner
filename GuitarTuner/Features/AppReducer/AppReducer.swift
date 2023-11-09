@@ -60,9 +60,7 @@ struct AppReducer: Reducer {
       case let .setSettings(value):
         state.instrument = value.instrument
         state.tuning = value.tuning
-        return .run { send in
-          await self.sound.setInstrument(value.instrument)
-        }
+        return .run { _ in await self.sound.setInstrument(value.instrument) }
         
       case let .play(note):
         state.inFlightNotes.append(note)
