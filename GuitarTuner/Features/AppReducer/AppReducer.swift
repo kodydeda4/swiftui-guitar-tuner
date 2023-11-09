@@ -28,8 +28,8 @@ struct AppReducer: Reducer {
     case stop(Note)
     case playAllCancel
     case playAllDidComplete
-    case setSettings(UserDefaultsClient.Settings)
-    case save
+    case saveSettings
+    case loadSettings(UserDefaultsClient.Settings)
     case view(View)
     
     enum View: Equatable {
@@ -55,12 +55,7 @@ struct AppReducer: Reducer {
   
   func reduce(into state: inout State, action: Action) -> Effect<Action> {
     switch action {
-      
-    case let .setSettings(value):
-      state.instrument = value.instrument
-      state.tuning = value.tuning
-      return .run { _ in await self.sound.setInstrument(value.instrument) }
-      
+        
     case let .play(note):
       state.inFlightNotes.append(note)
       return .run { _ in await sound.play(note) }
@@ -77,14 +72,19 @@ struct AppReducer: Reducer {
     case .playAllDidComplete:
       state.isPlayAllInFlight = false
       return .none
-      
-    case .save:
+        
+    case .saveSettings:
       return .run { [state = state] _ in
         try? userDefaults.set(
           encode(UserDefaultsClient.Settings.init(from: state)),
           forKey: .settings
         )
       }
+      
+    case let .loadSettings(value):
+      state.instrument = value.instrument
+      state.tuning = value.tuning
+      return .run { _ in await self.sound.setInstrument(value.instrument) }
       
     case let .view(action):
       switch action {
@@ -97,7 +97,7 @@ struct AppReducer: Reducer {
                 if let value = data.flatMap({
                   try? decode(UserDefaultsClient.Settings.self, from: $0)
                 }) {
-                  await send(.setSettings(value))
+                  await send(.loadSettings(value))
                 }
               }
             }
@@ -167,12 +167,12 @@ struct AppReducer: Reducer {
         return .run { send in
           await self.sound.setInstrument(value)
           await send(.playAllCancel)
-          await send(.save)
+          await send(.saveSettings)
         }
         
       case let .setTuning(value):
         state.tuning = value
-        return .send(.save)
+        return .send(.saveSettings)
         
       case let .setIsSheetPresented(value):
         state.isSheetPresented = value
