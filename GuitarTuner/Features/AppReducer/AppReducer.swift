@@ -166,6 +166,7 @@ struct AppReducer: Reducer {
           state.instrument = value
           return .run { send in
             await self.sound.setInstrument(value)
+            await send(.cancelPlayAll)
           }
           
         case .binding(.set(\.$isLoopNoteEnabled, false)):
