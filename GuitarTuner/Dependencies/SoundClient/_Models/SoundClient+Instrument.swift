@@ -29,7 +29,7 @@ extension SoundClient.Instrument {
     }
   }
   
-  var imageSmall: ImageResource {
+  var imageThumbnail: ImageResource {
     switch self {
     case .metal: return .metalThumbnail
     case .electric: return .electricThumbnail

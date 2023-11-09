@@ -347,7 +347,7 @@ private struct InstrumentsView: View {
             viewStore.send(.setInstrument(instrument), animation: .spring())
           } label: {
             VStack {
-              Image(instrument.imageSmall)
+              Image(instrument.imageThumbnail)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 75, height: 75)
