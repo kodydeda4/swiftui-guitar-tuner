@@ -35,8 +35,8 @@ struct AppReducer: Reducer {
     enum View: Equatable {
       case task
       case noteButtonTapped(Note)
-      case playAllButtonTapped
-      case stopButtonTapped
+      case playAllStartButtonTapped
+      case playAllStopButtonTapped
       case setInstrument(SoundClient.Instrument)
       case setTuning(SoundClient.InstrumentTuning)
       case setIsSheetPresented(Bool)
@@ -104,7 +104,7 @@ struct AppReducer: Reducer {
           }
         }
         
-      case .playAllButtonTapped:
+      case .playAllStartButtonTapped:
         guard !state.isPlayAllInFlight else { return .none }
         state.isPlayAllInFlight = true
         return .run { [inFlight = state.inFlightNotes, notes = state.notes] send in
@@ -134,7 +134,7 @@ struct AppReducer: Reducer {
         }
         .cancellable(id: CancelID.playAll.self)
         
-      case .stopButtonTapped:
+      case .playAllStopButtonTapped:
         return .run { [notes = state.inFlightNotes] send in
           await send(.playAllCancel)
           for note in notes {
@@ -342,13 +342,13 @@ private extension AppView {
         Group {
           if !viewStore.isPlayAllInFlight {
             Button("Play All") {
-              viewStore.send(.playAllButtonTapped)
+              viewStore.send(.playAllStartButtonTapped)
             }
             .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .green))
             .frame(height: 50)
           } else {
             Button("Stop") {
-              viewStore.send(.stopButtonTapped)
+              viewStore.send(.playAllStopButtonTapped)
             }
             .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .red))
             .frame(height: 50)
