@@ -16,11 +16,11 @@ import DependenciesAdditions
 
 struct AppReducer: Reducer {
   struct State: Equatable {
+    var instrument = SoundClient.Instrument.electric
+    var tuning = SoundClient.InstrumentTuning.eStandard
+    var isSheetPresented = false
     var inFlightNotes = IdentifiedArrayOf<Note>()
     var isPlayAllInFlight = false
-    @BindingState var instrument = SoundClient.Instrument.electric
-    @BindingState var tuning = SoundClient.InstrumentTuning.eStandard
-    @BindingState var isSheetPresented = false
   }
   
   enum Action: Equatable {
@@ -29,15 +29,17 @@ struct AppReducer: Reducer {
     case playAllCancel
     case playAllDidComplete
     case setSettings(UserDefaultsClient.Settings)
+    case save
     case view(View)
     
-    enum View: BindableAction, Equatable {
+    enum View: Equatable {
       case task
       case noteButtonTapped(Note)
       case playAllButtonTapped
       case stopButtonTapped
       case setInstrument(SoundClient.Instrument)
-      case binding(BindingAction<State>)
+      case setTuning(SoundClient.InstrumentTuning)
+      case setIsSheetPresented(Bool)
     }
   }
   
@@ -51,124 +53,130 @@ struct AppReducer: Reducer {
     case playAll
   }
   
-  var body: some ReducerOf<Self> {
-    BindingReducer(action: /Action.view)
-    Reduce { state, action in
+  func reduce(into state: inout State, action: Action) -> Effect<Action> {
+    switch action {
+      
+    case let .setSettings(value):
+      state.instrument = value.instrument
+      state.tuning = value.tuning
+      return .run { _ in await self.sound.setInstrument(value.instrument) }
+      
+    case let .play(note):
+      state.inFlightNotes.append(note)
+      return .run { _ in await sound.play(note) }
+      
+    case let .stop(note):
+      state.inFlightNotes.remove(id: note.id)
+      return .run { _ in await sound.stop(note) }
+      
+    case .playAllCancel:
+      state.isPlayAllInFlight = false
+      state.inFlightNotes = []
+      return .cancel(id: CancelID.playAll.self)
+      
+    case .playAllDidComplete:
+      state.isPlayAllInFlight = false
+      return .none
+      
+    case .save:
+      return .run { [state = state] _ in
+        try? userDefaults.set(
+          encode(UserDefaultsClient.Settings.init(from: state)),
+          forKey: .settings
+        )
+      }
+      
+    case let .view(action):
       switch action {
         
-      case let .setSettings(value):
-        state.instrument = value.instrument
-        state.tuning = value.tuning
-        return .run { _ in await self.sound.setInstrument(value.instrument) }
-        
-      case let .play(note):
-        state.inFlightNotes.append(note)
-        return .run { _ in await sound.play(note) }
-        
-      case let .stop(note):
-        state.inFlightNotes.remove(id: note.id)
-        return .run { _ in await sound.stop(note) }
-        
-      case .playAllCancel:
-        state.isPlayAllInFlight = false
-        state.inFlightNotes = []
-        return .cancel(id: CancelID.playAll.self)
-        
-      case .playAllDidComplete:
-        state.isPlayAllInFlight = false
-        return .none
-        
-      case let .view(action):
-        switch action {
-          
-        case .task:
-          return .run { send in
-            await withTaskGroup(of: Void.self) { group in
-              group.addTask {
-                for await data in userDefaults.dataValues(forKey: .settings) {
-                  if let value = data.flatMap({
-                    try? decode(UserDefaultsClient.Settings.self, from: $0)
-                  }) {
-                    await send(.setSettings(value))
-                  }
+      case .task:
+        return .run { send in
+          await withTaskGroup(of: Void.self) { group in
+            group.addTask {
+              for await data in userDefaults.dataValues(forKey: .settings) {
+                if let value = data.flatMap({
+                  try? decode(UserDefaultsClient.Settings.self, from: $0)
+                }) {
+                  await send(.setSettings(value))
                 }
               }
             }
           }
-          
-        case .playAllButtonTapped:
-          guard !state.isPlayAllInFlight else { return .none }
-          state.isPlayAllInFlight = true
-          return .run { [inFlight = state.inFlightNotes, notes = state.notes] send in
-            // stop any playing notes
-            for inFlightNote in inFlight {
-              await send(.stop(inFlightNote))
-            }
-            // play all the notes at a normal speed
-            for note in notes {
-              await send(.play(note))
-              try await clock.sleep(for: .seconds(1))
-              await send(.stop(note))
-            }
-            // play all the notes again faster except the last one
-            for note in notes.dropLast() {
-              await send(.play(note))
-              try await clock.sleep(for: .seconds(0.1))
-              await send(.stop(note))
-            }
-            // play the last note and let it ring
-            if let last = notes.last {
-              await send(.play(last))
-              try await clock.sleep(for: .seconds(1))
-              await send(.stop(last))
-            }
-            await send(.playAllDidComplete)
+        }
+        
+      case .playAllButtonTapped:
+        guard !state.isPlayAllInFlight else { return .none }
+        state.isPlayAllInFlight = true
+        return .run { [inFlight = state.inFlightNotes, notes = state.notes] send in
+          // stop any playing notes
+          for inFlightNote in inFlight {
+            await send(.stop(inFlightNote))
           }
-          .cancellable(id: CancelID.playAll.self)
-          
-        case .stopButtonTapped:
-          return .run { [notes = state.inFlightNotes] send in
-            await send(.playAllCancel)
-            for note in notes {
-              await send(.stop(note))
-            }
-          }
-          
-        case let .noteButtonTapped(note):
-          guard !state.isPlayAllInFlight else {
-            return .run { [inFlightNotes = state.inFlightNotes] send in
-              await send(.playAllCancel)
-              for note in inFlightNotes {
-                await send(.stop(note))
-              }
-            }
-          }
-          return .run { [inFlightNotes = state.inFlightNotes] send in
-            for inFlightNote in inFlightNotes {
-              await send(.stop(inFlightNote))
-            }
-            if !inFlightNotes.contains(note) {
-              await send(.play(note))
-            }
-            try await clock.sleep(for: .seconds(2))
+          // play all the notes at a normal speed
+          for note in notes {
+            await send(.play(note))
+            try await clock.sleep(for: .seconds(1))
             await send(.stop(note))
           }
-          
-        case let .setInstrument(value):
-          state.instrument = value
-          return .run { send in
-            await self.sound.setInstrument(value)
-            await send(.playAllCancel)
+          // play all the notes again faster except the last one
+          for note in notes.dropLast() {
+            await send(.play(note))
+            try await clock.sleep(for: .seconds(0.1))
+            await send(.stop(note))
           }
-          
-        case .binding:
-          return .run { [state = state] _ in
-            try? userDefaults.set(
-              encode(UserDefaultsClient.Settings.init(from: state)),
-              forKey: .settings
-            )
+          // play the last note and let it ring
+          if let last = notes.last {
+            await send(.play(last))
+            try await clock.sleep(for: .seconds(1))
+            await send(.stop(last))
+          }
+          await send(.playAllDidComplete)
+        }
+        .cancellable(id: CancelID.playAll.self)
+        
+      case .stopButtonTapped:
+        return .run { [notes = state.inFlightNotes] send in
+          await send(.playAllCancel)
+          for note in notes {
+            await send(.stop(note))
           }
         }
+        
+      case let .noteButtonTapped(note):
+        guard !state.isPlayAllInFlight else {
+          return .run { [inFlightNotes = state.inFlightNotes] send in
+            await send(.playAllCancel)
+            for note in inFlightNotes {
+              await send(.stop(note))
+            }
+          }
+        }
+        return .run { [inFlightNotes = state.inFlightNotes] send in
+          for inFlightNote in inFlightNotes {
+            await send(.stop(inFlightNote))
+          }
+          if !inFlightNotes.contains(note) {
+            await send(.play(note))
+          }
+          try await clock.sleep(for: .seconds(2))
+          await send(.stop(note))
+        }
+        
+      case let .setInstrument(value):
+        state.instrument = value
+        return .run { send in
+          await self.sound.setInstrument(value)
+          await send(.playAllCancel)
+          await send(.save)
+        }
+        
+      case let .setTuning(value):
+        state.tuning = value
+        return .send(.save)
+        
+      case let .setIsSheetPresented(value):
+        state.isSheetPresented = value
+        return .none
       }
     }
   }
@@ -227,10 +235,13 @@ struct AppView: View {
         .listStyle(.plain)
         .toolbar {
           Button("Settings") {
-            viewStore.send(.binding(.set(\.$isSheetPresented, true)))
+            viewStore.send(.setIsSheetPresented(false))
           }
         }
-        .sheet(isPresented: viewStore.$isSheetPresented, content: { sheet })
+        .sheet(
+          isPresented: viewStore.binding(get: \.isSheetPresented, send: { .setIsSheetPresented($0) }),
+          content: { sheet }
+        )
       }
       .task { await viewStore.send(.task).finish() }
     }
@@ -348,7 +359,7 @@ private extension AppView {
           }
         }
         Button {
-          viewStore.send(.binding(.set(\.$isSheetPresented, true)))
+          viewStore.send(.setIsSheetPresented(true))
         } label: {
           Image(systemName: "gear")
             .resizable()
@@ -366,7 +377,7 @@ private extension AppView {
       NavigationStack {
         List {
           Section("Tuning") {
-            Picker(selection: viewStore.$tuning, label: EmptyView()) {
+            Picker(selection: viewStore.binding(get: \.tuning, send: { .setTuning($0) }), label: EmptyView()) {
               ForEach(SoundClient.InstrumentTuning.allCases) { tuning in
                 Text(tuning.description)
                   .tag(tuning)
@@ -380,7 +391,7 @@ private extension AppView {
         .navigationTitle("Settings")
         .toolbar {
           Button("Done") {
-            viewStore.send(.binding(.set(\.$isSheetPresented, false)))
+            viewStore.send(.setIsSheetPresented(false))
           }
         }
       }
