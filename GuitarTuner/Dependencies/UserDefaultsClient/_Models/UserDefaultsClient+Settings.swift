@@ -1,6 +1,6 @@
 import Foundation
 
-extension UserDefaults.Dependency {
+extension UserDefaultsClient {
   /// Global application settings.
   struct Settings: Equatable, Codable {
     var instrument = SoundClient.Instrument.acoustic

@@ -26,7 +26,7 @@ struct AppReducer: Reducer {
   }
   
   enum Action: Equatable {
-    case setSettings(UserDefaults.Dependency.Settings)
+    case setSettings(UserDefaultsClient.Settings)
     case play(Note)
     case stop(Note)
     case didCompletePlayAll
@@ -91,7 +91,7 @@ struct AppReducer: Reducer {
               group.addTask {
                 for await data in userDefaults.dataValues(forKey: .settings) {
                   if let value = data.flatMap({
-                    try? decode(UserDefaults.Dependency.Settings.self, from: $0)
+                    try? decode(UserDefaultsClient.Settings.self, from: $0)
                   }) {
                     await send(.setSettings(value))
                   }
@@ -182,7 +182,7 @@ struct AppReducer: Reducer {
         case .binding:
           return .run { [state = state] _ in
             try? userDefaults.set(
-              encode(UserDefaults.Dependency.Settings.init(from: state)),
+              encode(UserDefaultsClient.Settings.init(from: state)),
               forKey: .settings
             )
           }
@@ -213,7 +213,7 @@ extension AppReducer.State {
   }
 }
 
-private extension UserDefaults.Dependency.Settings {
+private extension UserDefaultsClient.Settings {
   init(from state: AppReducer.State) {
     self = Self(
       instrument: state.instrument,
