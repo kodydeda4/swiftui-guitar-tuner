@@ -38,7 +38,7 @@ extension SoundClient.Instrument {
     }
   }
   
-  var soundfontURL: URL {
+  var soundfontURL: URL? {
     switch self {
     case .electric: Bundle.main.url(forResource: "Electric", withExtension: "sf2")!
     case .acoustic: Bundle.main.url(forResource: "Acoustic", withExtension: "sf2")!
@@ -47,3 +47,5 @@ extension SoundClient.Instrument {
     }
   }
 }
+
+//Bundle.main.url(forResource: "Sounds/Instrument1", withExtension: "aupreset")

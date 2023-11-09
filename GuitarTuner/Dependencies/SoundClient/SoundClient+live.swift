@@ -9,7 +9,7 @@ extension SoundClient {
     return Self(
       play: { conductor.play($0) },
       stop: { conductor.stop($0) },
-      setInstrument: { _ in  }
+      setInstrument: { conductor.setInstrument($0) }
     )
   }
 }
@@ -18,15 +18,24 @@ extension SoundClient {
 
 private final class Conductor {
   let engine = AVAudioEngine()
-  var instrument = AVAudioUnitSampler()
-  let instrumentURL = Bundle.main.url(forResource: "Sounds/Instrument1", withExtension: "aupreset")
+  var sampler = AVAudioUnitSampler()
+  var instrumentURL = SoundClient.Instrument.acoustic.soundfontURL
   
   init() {
     do {
-      engine.attach(instrument)
-      engine.connect(instrument, to: engine.mainMixerNode, format: nil)
+      engine.mainMixerNode.volume = 1
+      engine.attach(sampler)
+      engine.connect(sampler, to: engine.mainMixerNode, format: nil)
       if let instrumentURL {
-        try? instrument.loadInstrument(at: instrumentURL)
+        //try? instrument.loadInstrument(at: instrumentURL)
+        try? sampler.loadSoundBankInstrument(
+          at: instrumentURL,
+          program: 0,
+          bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
+          bankLSB: UInt8(kAUSampler_DefaultBankLSB)
+        )
+      } else {
+        print("Failed to load instrument.")
       }
       try engine.start()
     } catch {
@@ -35,10 +44,25 @@ private final class Conductor {
   }
   
   func play(_ note: Note) {
-    instrument.startNote(UInt8(note.pitch.intValue), withVelocity: 127, onChannel: 0)
+    sampler.startNote(UInt8(note.pitch.intValue), withVelocity: 127, onChannel: 0)
   }
   
   func stop(_ note: Note) {
-    instrument.stopNote(UInt8(note.pitch.intValue), onChannel: 0)
+    sampler.stopNote(UInt8(note.pitch.intValue), onChannel: 0)
+  }
+  
+  func setInstrument(_ newValue: SoundClient.Instrument) {
+    self.instrumentURL = newValue.soundfontURL
+    if let instrumentURL = newValue.soundfontURL {
+      //try? instrument.loadInstrument(at: instrumentURL)
+      try? sampler.loadSoundBankInstrument(
+        at: instrumentURL,
+        program: 0,
+        bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
+        bankLSB: UInt8(kAUSampler_DefaultBankLSB)
+      )
+    } else {
+      print("Failed to load instrument.")
+    }
   }
 }

@@ -17,25 +17,27 @@ struct AppReducer: Reducer {
   struct State: Equatable {
     var inFlightNotes = IdentifiedArrayOf<Note>()
     var isPlayAllInFlight = false
-    @BindingState var instrument = SoundClient.Instrument.electric
+    
+    var instrument = SoundClient.Instrument.electric
     @BindingState var tuning = SoundClient.InstrumentTuning.eStandard
     @BindingState var isLoopNoteEnabled = false
     @BindingState var isSheetPresented = false
   }
   
   enum Action: Equatable {
-    case view(View)
     case setSettings(UserDefaults.Dependency.Settings)
     case play(Note)
     case stop(Note)
     case didCompletePlayAll
     case cancelPlayAll
+    case view(View)
     
     enum View: BindableAction, Equatable {
       case task
       case noteButtonTapped(Note)
       case playAllButtonTapped
       case stopButtonTapped
+      case setInstrument(SoundClient.Instrument)
       case binding(BindingAction<State>)
     }
   }
@@ -54,6 +56,30 @@ struct AppReducer: Reducer {
     BindingReducer(action: /Action.view)
     Reduce { state, action in
       switch action {
+        
+      case let .setSettings(value):
+        state.instrument = value.instrument
+        state.tuning = value.tuning
+        return .run { send in
+          await self.sound.setInstrument(value.instrument)
+        }
+        
+      case let .play(note):
+        state.inFlightNotes.append(note)
+        return .run { _ in await sound.play(note) }
+        
+      case let .stop(note):
+        state.inFlightNotes.remove(id: note.id)
+        return .run { _ in await sound.stop(note) }
+        
+      case .didCompletePlayAll:
+        state.isPlayAllInFlight = false
+        return .none
+        
+      case .cancelPlayAll:
+        state.isPlayAllInFlight = false
+        state.inFlightNotes = []
+        return .cancel(id: CancelID.playAll.self)
         
       case let .view(action):
         switch action {
@@ -136,6 +162,12 @@ struct AppReducer: Reducer {
             }
           }
           
+        case let .setInstrument(value):
+          state.instrument = value
+          return .run { send in
+            await self.sound.setInstrument(value)
+          }
+          
         case .binding(.set(\.$isLoopNoteEnabled, false)):
           guard !state.inFlightNotes.isEmpty else { return .none }
           return .run { [inFlightNotes = state.inFlightNotes] send in
@@ -153,29 +185,6 @@ struct AppReducer: Reducer {
             )
           }
         }
-        
-      case let .setSettings(value):
-        state.instrument = value.instrument
-        state.tuning = value.tuning
-        return .none
-        
-      case let .play(note):
-        state.inFlightNotes.append(note)
-        return .run { _ in await sound.play(note) }
-        
-      case let .stop(note):
-        state.inFlightNotes.remove(id: note.id)
-        return .run { _ in await sound.stop(note) }
-        
-      case .didCompletePlayAll:
-        state.isPlayAllInFlight = false
-        return .none
-        
-      case .cancelPlayAll:
-        state.isPlayAllInFlight = false
-        state.inFlightNotes = []
-        return .cancel(id: CancelID.playAll.self)
-        
       }
     }
   }
@@ -301,7 +310,7 @@ private struct Header: View {
   
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      TabView(selection: viewStore.$instrument) {
+      TabView(selection: viewStore.binding(get: \.instrument, send: { .setInstrument($0) })) {
         ForEach(SoundClient.Instrument.allCases) { instrument in
           Image(instrument.imageLarge)
             .resizable()
@@ -333,10 +342,7 @@ private struct InstrumentsView: View {
       HStack {
         ForEach(SoundClient.Instrument.allCases) { instrument in
           Button {
-            viewStore.send(
-              .binding(.set(\.$instrument, instrument)),
-              animation: .spring()
-            )
+            viewStore.send(.setInstrument(instrument), animation: .spring())
           } label: {
             VStack {
               Image(instrument.imageSmall)
@@ -405,7 +411,7 @@ private struct TuningButtons: View {
   AppView(store: Store(
     initialState: AppReducer.State(
       instrument: .electric,
-      isSheetPresented: true
+      isSheetPresented: false
     ),
     reducer: AppReducer.init
   ))
