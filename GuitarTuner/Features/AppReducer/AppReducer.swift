@@ -197,18 +197,13 @@ extension AppReducer.State {
   }
   var notes: [Note] {
     switch instrument {
+    
     case .bass:
       Array(tuning.notes.prefix(upTo: 4))
       
     default:
       Array(tuning.notes)
     }
-  }
-  func isNoteButtonDisabled(_ note: Note) -> Bool {
-    isPlayAllInFlight
-  }
-  var isPlayAllButtonDisabled: Bool {
-    isPlayAllInFlight
   }
 }
 
