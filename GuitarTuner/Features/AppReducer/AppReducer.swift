@@ -4,10 +4,11 @@ import Tonic
 import DependenciesAdditions
 
 // MARK: - Todo:
-// 1. add multiple au instruments - acoustic, electric, bass, ukelele
-// 2. fix tuning for ukelele
+// 1. fix tuning for ukelele
+// 2. better images
 // 3. figure out a better layout
-// 4. add animations
+// 4. readme
+// 5. appstore
 //
 // MARK: - Tutorial:
 // 1. Getting Started - https://youtu.be/JT-0UDZDAsU?si=pYqavx6mxjU4cREO//
