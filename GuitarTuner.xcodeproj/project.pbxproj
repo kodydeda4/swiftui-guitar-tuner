@@ -19,6 +19,8 @@
 		332B30182AEAF23500E507E8 /* UserDefaultsClient+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B30172AEAF23500E507E8 /* UserDefaultsClient+Settings.swift */; };
 		332B301A2AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B30192AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift */; };
 		332B301C2AEAF29400E507E8 /* SoundClient+Instrument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B301B2AEAF29400E507E8 /* SoundClient+Instrument.swift */; };
+		3363E6AB2AFD7EFA009A73D4 /* Electric.sf2 in Resources */ = {isa = PBXBuildFile; fileRef = 3363E6AA2AFD7EBB009A73D4 /* Electric.sf2 */; };
+		3363E6AC2AFD7EFA009A73D4 /* Acoustic.sf2 in Resources */ = {isa = PBXBuildFile; fileRef = 3363E6A92AFD7EAB009A73D4 /* Acoustic.sf2 */; };
 		337C29B52AEBEEF1004FB6BD /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = 337C29B42AEBEEF1004FB6BD /* Tonic */; };
 		337C29BC2AEBF418004FB6BD /* Tonic+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337C29BB2AEBF418004FB6BD /* Tonic+.swift */; };
 		33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D72ADDCC5B00EBC52A /* Main.swift */; };
@@ -29,8 +31,6 @@
 		33C201072ADDCD6B00EBC52A /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 33C201062ADDCD6B00EBC52A /* ComposableArchitecture */; };
 		33C201092ADDCE3C00EBC52A /* SoundClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C201082ADDCE3C00EBC52A /* SoundClient.swift */; };
 		33C2010F2ADDD55C00EBC52A /* SoundClient+live.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C2010E2ADDD55C00EBC52A /* SoundClient+live.swift */; };
-		33D48A0A2AE74AC8000D66C9 /* Electric.sf2 in Resources */ = {isa = PBXBuildFile; fileRef = 33D48A062AE74AC8000D66C9 /* Electric.sf2 */; };
-		33D48A0B2AE74AC8000D66C9 /* Acoustic.sf2 in Resources */ = {isa = PBXBuildFile; fileRef = 33D48A072AE74AC8000D66C9 /* Acoustic.sf2 */; };
 		33D48A0C2AE74AC8000D66C9 /* Bass.sf2 in Resources */ = {isa = PBXBuildFile; fileRef = 33D48A082AE74AC8000D66C9 /* Bass.sf2 */; };
 		33D48A0D2AE74AC8000D66C9 /* Ukelele.sf2 in Resources */ = {isa = PBXBuildFile; fileRef = 33D48A092AE74AC8000D66C9 /* Ukelele.sf2 */; };
 /* End PBXBuildFile section */
@@ -52,6 +52,8 @@
 		332B30172AEAF23500E507E8 /* UserDefaultsClient+Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaultsClient+Settings.swift"; sourceTree = "<group>"; };
 		332B30192AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SoundClient+InstrumentTuning.swift"; sourceTree = "<group>"; };
 		332B301B2AEAF29400E507E8 /* SoundClient+Instrument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SoundClient+Instrument.swift"; sourceTree = "<group>"; };
+		3363E6A92AFD7EAB009A73D4 /* Acoustic.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Acoustic.sf2; sourceTree = "<group>"; };
+		3363E6AA2AFD7EBB009A73D4 /* Electric.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Electric.sf2; sourceTree = "<group>"; };
 		3365F7B32AEB2E1000014C39 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		337C29BB2AEBF418004FB6BD /* Tonic+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tonic+.swift"; sourceTree = "<group>"; };
 		33C200D42ADDCC5B00EBC52A /* GuitarTuner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GuitarTuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -63,8 +65,6 @@
 		33C200E82ADDCC5D00EBC52A /* GuitarTunerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuitarTunerTests.swift; sourceTree = "<group>"; };
 		33C201082ADDCE3C00EBC52A /* SoundClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundClient.swift; sourceTree = "<group>"; };
 		33C2010E2ADDD55C00EBC52A /* SoundClient+live.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SoundClient+live.swift"; sourceTree = "<group>"; };
-		33D48A062AE74AC8000D66C9 /* Electric.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Electric.sf2; sourceTree = "<group>"; };
-		33D48A072AE74AC8000D66C9 /* Acoustic.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Acoustic.sf2; sourceTree = "<group>"; };
 		33D48A082AE74AC8000D66C9 /* Bass.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bass.sf2; sourceTree = "<group>"; };
 		33D48A092AE74AC8000D66C9 /* Ukelele.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ukelele.sf2; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -223,9 +223,9 @@
 		33C201042ADDCD3800EBC52A /* Soundfonts */ = {
 			isa = PBXGroup;
 			children = (
-				33D48A072AE74AC8000D66C9 /* Acoustic.sf2 */,
+				3363E6AA2AFD7EBB009A73D4 /* Electric.sf2 */,
+				3363E6A92AFD7EAB009A73D4 /* Acoustic.sf2 */,
 				33D48A082AE74AC8000D66C9 /* Bass.sf2 */,
-				33D48A062AE74AC8000D66C9 /* Electric.sf2 */,
 				33D48A092AE74AC8000D66C9 /* Ukelele.sf2 */,
 			);
 			path = Soundfonts;
@@ -347,8 +347,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				33D48A0B2AE74AC8000D66C9 /* Acoustic.sf2 in Resources */,
-				33D48A0A2AE74AC8000D66C9 /* Electric.sf2 in Resources */,
+				3363E6AB2AFD7EFA009A73D4 /* Electric.sf2 in Resources */,
+				3363E6AC2AFD7EFA009A73D4 /* Acoustic.sf2 in Resources */,
 				33C200DF2ADDCC5D00EBC52A /* Preview Assets.xcassets in Resources */,
 				33D48A0D2AE74AC8000D66C9 /* Ukelele.sf2 in Resources */,
 				33D48A0C2AE74AC8000D66C9 /* Bass.sf2 in Resources */,
