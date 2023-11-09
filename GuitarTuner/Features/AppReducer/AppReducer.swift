@@ -206,10 +206,6 @@ private extension UserDefaultsClient.Settings {
   }
 }
 
-extension Note: Identifiable {
-  public var id: Int8 { pitch.midiNoteNumber }
-}
-
 // MARK: - SwiftUI
 
 struct AppView: View {
@@ -371,7 +367,6 @@ private extension AppView {
     }
   }
   
-  @MainActor
   private var sheet: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       NavigationStack {
