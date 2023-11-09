@@ -20,7 +20,6 @@ struct AppReducer: Reducer {
     var isPlayAllInFlight = false
     @BindingState var instrument = SoundClient.Instrument.electric
     @BindingState var tuning = SoundClient.InstrumentTuning.eStandard
-    @BindingState var isLoopNoteEnabled = false
     @BindingState var isSheetPresented = false
   }
   
@@ -144,20 +143,15 @@ struct AppReducer: Reducer {
               }
             }
           }
-          return .run { [
-            inFlightNotes = state.inFlightNotes,
-            isLoopEnabled = state.isLoopNoteEnabled
-          ] send in
+          return .run { [inFlightNotes = state.inFlightNotes] send in
             for inFlightNote in inFlightNotes {
               await send(.stop(inFlightNote))
             }
             if !inFlightNotes.contains(note) {
               await send(.play(note))
             }
-            if !isLoopEnabled {
-              try await clock.sleep(for: .seconds(2))
-              await send(.stop(note))
-            }
+            try await clock.sleep(for: .seconds(2))
+            await send(.stop(note))
           }
           
         case let .setInstrument(value):
@@ -165,15 +159,6 @@ struct AppReducer: Reducer {
           return .run { send in
             await self.sound.setInstrument(value)
             await send(.playAllCancel)
-          }
-          
-        case .binding(.set(\.$isLoopNoteEnabled, false)):
-          guard !state.inFlightNotes.isEmpty else { return .none }
-          return .run { [inFlightNotes = state.inFlightNotes] send in
-            for note in inFlightNotes {
-              try await clock.sleep(for: .seconds(1))
-              await send(.stop(note))
-            }
           }
           
         case .binding:
@@ -244,18 +229,24 @@ struct AppView: View {
                     viewStore.send(.playAllButtonTapped)
                   }
                   .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .green))
+                  .frame(height: 50)
                 } else {
                   Button("Stop") {
                     viewStore.send(.stopButtonTapped)
                   }
                   .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .red))
+                  .frame(height: 50)
                 }
               }
-              Button("⚙️") {
+              Button {
                 viewStore.send(.binding(.set(\.$isSheetPresented, true)))
+              } label: {
+                Image(systemName: "gear")
+                  .resizable()
+                  .scaledToFit()
               }
               .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: Color(.systemGray)))
-              .frame(width: 50)
+              .frame(width: 50, height: 50)
             }
           }
           .padding()
@@ -271,12 +262,6 @@ struct AppView: View {
         .sheet(isPresented: viewStore.$isSheetPresented) {
           NavigationStack {
             List {
-              Section {
-                Toggle("Loop Note", isOn: viewStore.$isLoopNoteEnabled)
-              } footer: {
-                Text("Play the note until you stop it.")
-              }
-              
               Section("Tuning") {
                 Picker(selection: viewStore.$tuning, label: EmptyView()) {
                   ForEach(SoundClient.InstrumentTuning.allCases) { tuning in
@@ -314,7 +299,6 @@ private struct Header: View {
             .resizable()
             .scaledToFit()
             .padding(8)
-            .clipShape(Circle())
             .frame(maxWidth: .infinity, alignment: .center)
             .tag(instrument)
         }
