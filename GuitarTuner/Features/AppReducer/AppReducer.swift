@@ -4,11 +4,10 @@ import Tonic
 import DependenciesAdditions
 
 // MARK: - Todo:
-// 1. replace ukelele with distorted guitar
-// 2. better images
-// 3. figure out a better layout
-// 4. readme
-// 5. appstore
+// 1. better images
+// 2. figure out a better layout
+// 3. readme
+// 4. appstore
 //
 // MARK: - Tutorial:
 // 1. Getting Started - https://youtu.be/JT-0UDZDAsU?si=pYqavx6mxjU4cREO//
@@ -16,7 +15,7 @@ import DependenciesAdditions
 
 struct AppReducer: Reducer {
   struct State: Equatable {
-    var instrument = SoundClient.Instrument.electric
+    var instrument = SoundClient.Instrument.guitar
     var tuning = SoundClient.InstrumentTuning.eStandard
     var inFlightNotes = IdentifiedArrayOf<Note>()
     var isPlayAllInFlight = false

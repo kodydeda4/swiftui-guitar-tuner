@@ -19,7 +19,7 @@ extension SoundClient {
 private final class Conductor {
   let engine = AVAudioEngine()
   var sampler = AVAudioUnitSampler()
-  var instrumentURL = SoundClient.Instrument.acoustic.soundfontURL
+  var instrument = SoundClient.Instrument.guitar
   
   init() {
     do {
@@ -27,7 +27,7 @@ private final class Conductor {
       engine.attach(sampler)
       engine.connect(sampler, to: engine.mainMixerNode, format: nil)
       try? sampler.loadSoundBankInstrument(
-        at: instrumentURL,
+        at: instrument.soundfontURL,
         program: 0,
         bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
         bankLSB: UInt8(kAUSampler_DefaultBankLSB)
@@ -47,7 +47,7 @@ private final class Conductor {
   }
   
   func setInstrument(_ newValue: SoundClient.Instrument) {
-    self.instrumentURL = newValue.soundfontURL
+    self.instrument = newValue
     try? sampler.loadSoundBankInstrument(
       at: newValue.soundfontURL,
       program: 0,
