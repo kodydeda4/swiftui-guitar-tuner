@@ -213,19 +213,47 @@ struct AppView: View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       NavigationStack {
         VStack {
-          header
+          Text(viewStore.navigationTitle)
+            .font(.largeTitle)
+            .fontWeight(.bold)
+            .fontDesign(.rounded)
+            .foregroundColor(.accentColor)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(.regularMaterial)
           
-          VStack {
-            instruments
-              .padding(.vertical)
+          HStack {
+            content
+              //.frame(maxWidth: .infinity)
+              .padding()
+              
+            VStack {
+              instruments
+            }
+            .padding()
+            .frame(width: 100)
+            //.frame(maxWidth: .infinity, alignment: .trailing)
+          }
+          
+            
+          
+          
+          
+          VStack(spacing: 20) {
             tuningButtons
-              .padding(.bottom)
+            
             footer
           }
           .padding()
+          .background(.regularMaterial)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .navigationTitle(viewStore.navigationTitle)
+        .background(LinearGradient(
+          colors: [Color.secondary.opacity(0.15), .black],
+          startPoint: .top,
+          endPoint: .bottom
+        ))
+        .toolbar(.hidden)
         .sheet(
           isPresented: viewStore.binding(get: \.isSheetPresented, send: { .setIsSheetPresented($0) }),
           content: { sheet }
@@ -237,7 +265,7 @@ struct AppView: View {
 }
 
 private extension AppView {
-  private var header: some View {
+  private var content: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       TabView(selection: viewStore.binding(get: \.instrument, send: { .setInstrument($0) })) {
         ForEach(SoundClient.Instrument.allCases) { instrument in
@@ -251,11 +279,6 @@ private extension AppView {
       }
       .tabViewStyle(.page(indexDisplayMode: .never))
       .frame(maxWidth: .infinity)
-      .background(LinearGradient(
-        colors: [Color.accentColor.opacity(0.25), .clear],
-        startPoint: .top,
-        endPoint: .bottom
-      ))
       .listRowSeparator(.hidden)
       .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -263,39 +286,36 @@ private extension AppView {
   
   private var instruments: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      HStack {
-        ForEach(SoundClient.Instrument.allCases) { instrument in
-          Button {
-            viewStore.send(.setInstrument(instrument), animation: .spring())
-          } label: {
-            VStack {
-              Image(instrument.imageResource)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 75, height: 75)
-                .padding(12)
-                .frame(maxWidth: .infinity)
-                .background(.thinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .overlay {
-                  RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .strokeBorder(lineWidth: 2)
-                    .foregroundColor(.accentColor)
-                    .opacity(viewStore.instrument == instrument ? 1 : 0)
-                }
-              
-              Text(instrument.description)
-                .font(.caption)
-                .foregroundColor(viewStore.instrument == instrument ? .primary : .secondary)
-                .fontWeight(.semibold)
-            }
-            .frame(maxWidth: .infinity)
-            .tag(instrument.id)
+      ForEach(SoundClient.Instrument.allCases) { instrument in
+        Button {
+          viewStore.send(.setInstrument(instrument), animation: .spring())
+        } label: {
+          VStack {
+            Image(instrument.imageResource)
+              .resizable()
+              .scaledToFit()
+              .frame(width: 75, height: 75)
+              .padding(12)
+              .frame(maxWidth: .infinity)
+              .background(.thinMaterial)
+              .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+              .overlay {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                  .strokeBorder(lineWidth: 2)
+                  .foregroundColor(.accentColor)
+                  .opacity(viewStore.instrument == instrument ? 1 : 0)
+              }
+            
+            Text(instrument.description)
+              .font(.caption)
+              .foregroundColor(viewStore.instrument == instrument ? .primary : .secondary)
+              .fontWeight(.semibold)
           }
-          .buttonStyle(.plain)
+          .frame(maxWidth: .infinity)
+          .tag(instrument.id)
         }
+        .buttonStyle(.plain)
       }
-      .frame(maxWidth: .infinity)
     }
   }
   
@@ -310,12 +330,12 @@ private extension AppView {
               Text(note.description.prefix(1))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .foregroundColor(viewStore.inFlightNotes.contains(note) ? Color.white : .primary)
-                .background(viewStore.inFlightNotes.contains(note) ? Color.accentColor : Color(.systemGray6))
+                .background(viewStore.inFlightNotes.contains(note) ? Color.green : Color(.systemGray6))
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .overlay {
                   RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .strokeBorder(lineWidth: 2)
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(.green)
                     .opacity(viewStore.inFlightNotes.contains(note) ? 1 : 0)
                 }
                 .frame(width: 50, height: 50)
