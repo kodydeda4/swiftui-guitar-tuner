@@ -18,20 +18,12 @@ extension SoundClient.Instrument: CustomStringConvertible {
 }
 
 extension SoundClient.Instrument {
-  var imageLarge: ImageResource {
+  var imageResource: ImageResource {
     switch self {
     case .guitar: return .guitar
     case .bass: return .bass
     }
   }
-  
-  var imageThumbnail: ImageResource {
-    switch self {
-    case .guitar: return .guitarThumbnail
-    case .bass: return .bassThumbnail
-    }
-  }
-  
   var soundfontURL: URL {
     switch self {
     case .guitar: Bundle.main.url(forResource: "Guitar", withExtension: "sf2")!

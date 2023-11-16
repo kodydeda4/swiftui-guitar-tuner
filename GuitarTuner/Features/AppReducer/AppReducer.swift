@@ -4,9 +4,8 @@ import Tonic
 import DependenciesAdditions
 
 // MARK: - Todo:
-// 1. better images
-// 2. figure out a better layout
-// 3. readme
+// 1. fix button heights
+// 2. readme
 // 4. appstore
 //
 // MARK: - Tutorial:
@@ -242,7 +241,7 @@ private extension AppView {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       TabView(selection: viewStore.binding(get: \.instrument, send: { .setInstrument($0) })) {
         ForEach(SoundClient.Instrument.allCases) { instrument in
-          Image(instrument.imageLarge)
+          Image(instrument.imageResource)
             .resizable()
             .scaledToFit()
             .padding(8)
@@ -270,7 +269,7 @@ private extension AppView {
             viewStore.send(.setInstrument(instrument), animation: .spring())
           } label: {
             VStack {
-              Image(instrument.imageThumbnail)
+              Image(instrument.imageResource)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 75, height: 75)
