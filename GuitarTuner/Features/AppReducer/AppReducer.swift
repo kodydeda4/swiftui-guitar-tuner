@@ -353,7 +353,7 @@ private extension AppView {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       HStack {
         Group {
-          if !viewStore.isPlayAllInFlight {
+          if viewStore.inFlightNotes.isEmpty {
             Button("Play All") {
               viewStore.send(.playAllStartButtonTapped)
             }
