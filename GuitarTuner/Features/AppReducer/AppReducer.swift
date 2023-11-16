@@ -252,7 +252,7 @@ private extension AppView {
       .tabViewStyle(.page(indexDisplayMode: .never))
       .frame(maxWidth: .infinity)
       .background(LinearGradient(
-        colors: [.accentColor, .clear],
+        colors: [Color.accentColor.opacity(0.25), .clear],
         startPoint: .top,
         endPoint: .bottom
       ))
@@ -273,6 +273,7 @@ private extension AppView {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 75, height: 75)
+                .padding(12)
                 .frame(maxWidth: .infinity)
                 .background(.thinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
