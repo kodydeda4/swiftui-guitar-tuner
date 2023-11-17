@@ -8,6 +8,9 @@ import DependenciesAdditions
 // 2. readme
 // 4. appstore
 //
+// inspo:
+// https://dribbble.com/shots/23064167-DeFi-Coin-Crypto-Mobile-App
+
 // MARK: - Tutorial:
 // 1. Getting Started - https://youtu.be/JT-0UDZDAsU?si=pYqavx6mxjU4cREO//
 // 2. Sounds - https://youtu.be/-z8ire5WN3U?si=BUcTWYK7vAECFebV&t=470
@@ -213,49 +216,65 @@ struct AppView: View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       NavigationStack {
         VStack {
-          Text(viewStore.navigationTitle)
-            .font(.largeTitle)
-            .fontWeight(.bold)
-            .fontDesign(.rounded)
-            .foregroundColor(.accentColor)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
-            .background(.regularMaterial)
-          
-          HStack {
-            content
-              //.frame(maxWidth: .infinity)
-              .padding()
-              
-            VStack {
-              instruments
-            }
-            .padding()
-            .frame(width: 100)
-            //.frame(maxWidth: .infinity, alignment: .trailing)
-          }
-          
+          VStack {
+            Text(viewStore.navigationTitle)
+              .font(.largeTitle)
+              .fontWeight(.bold)
+              .fontDesign(.rounded)
+              .foregroundColor(.white)
+              .frame(maxWidth: .infinity, alignment: .leading)
             
+            VStack {
+              content
+                .frame(height: 300)
+                .opacity(0)
+              instruments
+                .padding()
+            }
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay {
+              RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(lineWidth: 0.75)
+                .foregroundColor(Color(.systemGray2))
+            }
+            .overlay {
+              content
+                .frame(height: 300)
+                .offset(y: -50)
+            }
+            .shadow(radius: 10, y: 10)
+            
+            
+          }
+          .padding(.horizontal)
           
-          
+          Spacer()
           
           VStack(spacing: 20) {
             tuningButtons
-            
             footer
           }
           .padding()
+          //.background(Color(.systemBackground))
           .background(.regularMaterial)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(LinearGradient(
-          colors: [Color.secondary.opacity(0.15), .black],
-          startPoint: .top,
-          endPoint: .bottom
-        ))
-        .toolbar(.hidden)
+        .background {
+          LinearGradient(
+            colors: [Color.accentColor.opacity(0.5), .clear],
+            startPoint: .top,
+            endPoint: .bottom
+          )
+          .ignoresSafeArea()
+        }
+        .toolbar(.hidden, for: .navigationBar)
+        //.navigationTitle(viewStore.navigationTitle)
         .sheet(
-          isPresented: viewStore.binding(get: \.isSheetPresented, send: { .setIsSheetPresented($0) }),
+          isPresented: viewStore.binding(
+            get: \.isSheetPresented,
+            send: { .setIsSheetPresented($0) }
+          ),
           content: { sheet }
         )
       }
@@ -286,36 +305,39 @@ private extension AppView {
   
   private var instruments: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      ForEach(SoundClient.Instrument.allCases) { instrument in
-        Button {
-          viewStore.send(.setInstrument(instrument), animation: .spring())
-        } label: {
-          VStack {
-            Image(instrument.imageResource)
-              .resizable()
-              .scaledToFit()
-              .frame(width: 75, height: 75)
-              .padding(12)
-              .frame(maxWidth: .infinity)
-              .background(.thinMaterial)
-              .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-              .overlay {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                  .strokeBorder(lineWidth: 2)
-                  .foregroundColor(.accentColor)
-                  .opacity(viewStore.instrument == instrument ? 1 : 0)
-              }
-            
-            Text(instrument.description)
-              .font(.caption)
-              .foregroundColor(viewStore.instrument == instrument ? .primary : .secondary)
-              .fontWeight(.semibold)
+      HStack {
+        ForEach(SoundClient.Instrument.allCases) { instrument in
+          Button {
+            viewStore.send(.setInstrument(instrument), animation: .spring())
+          } label: {
+            VStack {
+              Image(instrument.imageResource)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 50, height: 50)
+                .padding(12)
+                .frame(maxWidth: .infinity)
+                .background(.thinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay {
+                  RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(lineWidth: 2)
+                    .foregroundColor(.accentColor)
+                    .opacity(viewStore.instrument == instrument ? 1 : 0)
+                }
+              
+              Text(instrument.description)
+                .font(.caption)
+                .foregroundColor(viewStore.instrument == instrument ? .primary : .secondary)
+                .fontWeight(.semibold)
+            }
+            .frame(maxWidth: .infinity)
+            .tag(instrument.id)
           }
-          .frame(maxWidth: .infinity)
-          .tag(instrument.id)
+          .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
       }
+      .frame(maxWidth: .infinity, alignment: .trailing)
     }
   }
   
@@ -367,15 +389,15 @@ private extension AppView {
             .frame(height: 50)
           }
         }
-        Button {
-          viewStore.send(.setIsSheetPresented(true))
-        } label: {
-          Image(systemName: "gear")
-            .resizable()
-            .scaledToFit()
-        }
-        .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: Color(.systemGray)))
-        .frame(width: 50, height: 50)
+//        Button {
+//          viewStore.send(.setIsSheetPresented(true))
+//        } label: {
+//          Image(systemName: "gear")
+//            .resizable()
+//            .scaledToFit()
+//        }
+//        .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: Color(.systemGray)))
+//        .frame(width: 50, height: 50)
       }
     }
   }
