@@ -315,14 +315,14 @@ struct AppView: View {
           //.background(.regularMaterial)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background {
-          LinearGradient(
-            colors: [Color.accentColor.opacity(0.75), .clear],
-            startPoint: .top,
-            endPoint: .bottom
-          )
-          .ignoresSafeArea()
-        }
+//        .background {
+//          LinearGradient(
+//            colors: [Color.accentColor.opacity(0.75), .clear],
+//            startPoint: .top,
+//            endPoint: .bottom
+//          )
+//          .ignoresSafeArea()
+//        }
         .toolbar(.hidden, for: .navigationBar)
         //.navigationTitle(viewStore.navigationTitle)
         .sheet(
