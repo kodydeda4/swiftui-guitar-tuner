@@ -223,12 +223,17 @@ struct AppView: View {
               .fontDesign(.rounded)
               .foregroundColor(.white)
               .frame(maxWidth: .infinity, alignment: .leading)
+              .padding(.vertical)
             
-            VStack {
+            VStack(spacing: 0) {
               content
-                .frame(height: 300)
+                .frame(height: 225)
+                .padding()
                 .frame(maxWidth: .infinity)
-                .opacity(0.000001)
+                .opacity(0.01)
+     
+              Divider()
+              
               instruments
                 .padding()
             }
@@ -242,30 +247,56 @@ struct AppView: View {
             }
             .overlay {
               content
-                .frame(height: 300)
-                .offset(y: -50)
+                .frame(height: 275)
+                .offset(y: -90)
+                .shadow(color: Color.black.opacity(0.15), radius: 10, y: 10)
+                
             }
             .shadow(radius: 10, y: 10)
             
-            Text("Tuning Buttons")
-              .font(.title2)
-              .fontWeight(.bold)
-              .fontDesign(.rounded)
-              .foregroundColor(.white)
-              .frame(maxWidth: .infinity, alignment: .leading)
-              .padding(.top)
-              .padding(.bottom, 4)
-            
-            tuningButtons
-              .padding()
-              .background(.regularMaterial)
-              .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-              .overlay {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                  .strokeBorder(lineWidth: 0.75)
-                  .foregroundColor(Color(.systemGray2))
-              }
-              .shadow(radius: 10, y: 10)
+//            Group {
+//              Text("Instrument")
+//                .font(.title2)
+//                .fontWeight(.bold)
+//                .fontDesign(.rounded)
+//                .foregroundColor(.white)
+//                .frame(maxWidth: .infinity, alignment: .leading)
+//                .padding(.top)
+//                .padding(.bottom, 4)
+//              
+//              instruments
+//                .padding()
+//                .background(.regularMaterial)
+//                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+//                .overlay {
+//                  RoundedRectangle(cornerRadius: 12, style: .continuous)
+//                    .strokeBorder(lineWidth: 0.75)
+//                    .foregroundColor(Color(.systemGray2))
+//                }
+//                .shadow(radius: 10, y: 10)
+//            }
+            Group {
+              
+              Text("Tuners")
+                .font(.title2)
+                .fontWeight(.bold)
+                .fontDesign(.rounded)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top)
+                .padding(.bottom, 4)
+              
+              tuningButtons
+                .padding()
+                .background(.regularMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay {
+                  RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(lineWidth: 0.75)
+                    .foregroundColor(Color(.systemGray2))
+                }
+                .shadow(radius: 10, y: 10)
+            }
             
             Spacer()
             
@@ -391,34 +422,64 @@ private extension AppView {
   
   private var footer: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
-      HStack {
-        Group {
-          if viewStore.inFlightNotes.isEmpty {
-            Button("Play All") {
-              viewStore.send(.playAllStartButtonTapped)
-            }
-            .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .green))
-            .frame(height: 50)
-          } else {
-            Button("Stop") {
-              viewStore.send(.playAllStopButtonTapped)
-            }
-            .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .red))
-            .frame(height: 50)
+      Button {
+        viewStore.send(
+          viewStore.inFlightNotes.isEmpty
+          ? .playAllStartButtonTapped
+          : .playAllStopButtonTapped
+        )
+      } label: {
+        Text(viewStore.inFlightNotes.isEmpty ? "Play All" : "Stop")
+          .font(.headline)
+          .fontWeight(.semibold)
+          .fontDesign(.rounded)
+          .foregroundColor(.white)
+          .frame(maxWidth: .infinity)
+          .padding()
+          .background(Color.green.opacity(0.75))
+          .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+          .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+              .strokeBorder(lineWidth: 0.75)
+              .foregroundColor(Color.green)
+              //.foregroundColor(Color(.systemGray2))
           }
-        }
-//        Button {
-//          viewStore.send(.setIsSheetPresented(true))
-//        } label: {
-//          Image(systemName: "gear")
-//            .resizable()
-//            .scaledToFit()
-//        }
-//        .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: Color(.systemGray)))
-//        .frame(width: 50, height: 50)
+          .shadow(radius: 10, y: 10)
       }
     }
   }
+
+  
+//  private var footerOLD: some View {
+//    WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
+//      HStack {
+//        Group {
+//          if viewStore.inFlightNotes.isEmpty {
+//            Button("Play All") {
+//              viewStore.send(.playAllStartButtonTapped)
+//            }
+//            .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .green))
+//            .frame(height: 50)
+//          } else {
+//            Button("Stop") {
+//              viewStore.send(.playAllStopButtonTapped)
+//            }
+//            .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: .red))
+//            .frame(height: 50)
+//          }
+//        }
+////        Button {
+////          viewStore.send(.setIsSheetPresented(true))
+////        } label: {
+////          Image(systemName: "gear")
+////            .resizable()
+////            .scaledToFit()
+////        }
+////        .buttonStyle(RoundedRectangleButtonStyle(backgroundColor: Color(.systemGray)))
+////        .frame(width: 50, height: 50)
+//      }
+//    }
+//  }
   
   private var sheet: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
