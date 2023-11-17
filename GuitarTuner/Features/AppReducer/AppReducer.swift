@@ -216,7 +216,7 @@ struct AppView: View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       NavigationStack {
         VStack {
-          VStack {
+          VStack(spacing: 0) {
             Text(viewStore.navigationTitle)
               .font(.largeTitle)
               .fontWeight(.bold)
@@ -227,10 +227,12 @@ struct AppView: View {
             VStack {
               content
                 .frame(height: 300)
-                .opacity(0)
+                .frame(maxWidth: .infinity)
+                .opacity(0.000001)
               instruments
                 .padding()
             }
+            .frame(maxWidth: .infinity)
             .background(.regularMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             .overlay {
@@ -245,19 +247,35 @@ struct AppView: View {
             }
             .shadow(radius: 10, y: 10)
             
+            Text("Tuning Buttons")
+              .font(.title2)
+              .fontWeight(.bold)
+              .fontDesign(.rounded)
+              .foregroundColor(.white)
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .padding(.top)
+              .padding(.bottom, 4)
+            
+            tuningButtons
+              .padding()
+              .background(.regularMaterial)
+              .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+              .overlay {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                  .strokeBorder(lineWidth: 0.75)
+                  .foregroundColor(Color(.systemGray2))
+              }
+              .shadow(radius: 10, y: 10)
+            
+            Spacer()
+            
+            footer
             
           }
           .padding(.horizontal)
-          
-          Spacer()
-          
-          VStack(spacing: 20) {
-            tuningButtons
-            footer
-          }
-          .padding()
+
           //.background(Color(.systemBackground))
-          .background(.regularMaterial)
+          //.background(.regularMaterial)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background {
