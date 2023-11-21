@@ -3,18 +3,6 @@ import ComposableArchitecture
 import Tonic
 import DependenciesAdditions
 
-// MARK: - Todo:
-// 1. fix button heights
-// 2. readme
-// 4. appstore
-//
-// inspo:
-// https://dribbble.com/shots/23064167-DeFi-Coin-Crypto-Mobile-App
-
-// MARK: - Tutorial:
-// 1. Getting Started - https://youtu.be/JT-0UDZDAsU?si=pYqavx6mxjU4cREO//
-// 2. Sounds - https://youtu.be/-z8ire5WN3U?si=BUcTWYK7vAECFebV&t=470
-
 @Reducer
 struct AppReducer {
   struct State: Equatable {
