@@ -181,12 +181,23 @@ struct AppView: View {
   var body: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       NavigationStack {
-        VStack {
-          instruments
-            .padding()
-          
-          tuning
-          Spacer()
+        ScrollView {
+          VStack(spacing: 32) {
+            Text(viewStore.navigationTitle)
+              .font(.largeTitle)
+              .fontWeight(.bold)
+              .fontDesign(.rounded)
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .padding(.vertical)
+
+            Group {
+              instruments
+            }
+            Group {
+              tuning
+            }
+          }
+          .padding()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background {
@@ -216,39 +227,29 @@ struct AppView: View {
 
 private extension AppView {
   private var instruments: some View {
-    WithViewStore(store, observe: \.navigationTitle) { viewStore in
+    VStack(spacing: 0) {
       VStack(spacing: 0) {
-        Text(viewStore.state)
-          .font(.largeTitle)
-          .fontWeight(.bold)
-          .fontDesign(.rounded)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding(.vertical)
-          .padding(.bottom)
+        Color.black.frame(height: 250).opacity(0.01)
+        Divider()
         
-        VStack(spacing: 0) {
-          Color.black.frame(height: 250).opacity(0.01)
-          Divider()
-          
-          instrumentPicker
-            .padding()
-        }
-        .frame(maxWidth: .infinity)
-        .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .overlay {
-          RoundedRectangle(cornerRadius: 12, style: .continuous)
-            .strokeBorder(lineWidth: 0.75)
-            .foregroundColor(Color(.systemGray2))
-        }
-        .overlay {
-          instrumentView
-            .frame(height: 275)
-            .offset(y: -90)
-            .shadow(color: Color.black.opacity(0.15), radius: 10, y: 10)
-        }
-        .shadow(radius: 10, y: 10)
+        instrumentPicker
+          .padding()
       }
+      .frame(maxWidth: .infinity)
+      .background(.regularMaterial)
+      .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+      .overlay {
+        RoundedRectangle(cornerRadius: 12, style: .continuous)
+          .strokeBorder(lineWidth: 0.75)
+          .foregroundColor(Color(.systemGray2))
+      }
+      .overlay {
+        instrumentView
+          .frame(height: 275)
+          .offset(y: -90)
+          .shadow(color: Color.black.opacity(0.15), radius: 10, y: 10)
+      }
+      .shadow(radius: 10, y: 10)
     }
   }
   
@@ -336,7 +337,7 @@ private extension AppView {
       }
       .shadow(radius: 10, y: 10)
     }
-    .padding(.horizontal)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
   
   private var tuningHeader: some View {
@@ -387,7 +388,7 @@ private extension AppView {
                     .strokeBorder(lineWidth: 0.75)
                     .foregroundColor(Color(.systemGray3))
                 }
-                .frame(width: 50, height: 50)
+                .frame(width: 40, height: 40)
             }
             .frame(maxWidth: .infinity)
           }
