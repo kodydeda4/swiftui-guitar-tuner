@@ -6,7 +6,7 @@
 
 ## About
 
-<!--[Guitar Tuner](https://apps.apple.com/us/app/peg-puzzle-classic/id6469359729) is an open-source music tool available for iOS, iPadOS, and macOS.-->
+[Guitar Tuner](https://apps.apple.com/us/app/accutune-guitar-tuner/id6472688914) is an open-source music tool available for iOS, iPadOS, and macOS.
 
 ## Source Code
 
