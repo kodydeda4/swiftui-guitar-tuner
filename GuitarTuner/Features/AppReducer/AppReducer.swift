@@ -203,12 +203,7 @@ struct AppView: View {
               .padding(.vertical)
             
             VStack(spacing: 0) {
-              instrumentView
-                .frame(height: 225)
-                .padding()
-                .frame(maxWidth: .infinity)
-                .opacity(0.01)
-              
+              Color.black.frame(height: 250).opacity(0.01)
               Divider()
               
               instrumentPicker
@@ -227,7 +222,6 @@ struct AppView: View {
                 .frame(height: 275)
                 .offset(y: -90)
                 .shadow(color: Color.black.opacity(0.15), radius: 10, y: 10)
-              
             }
             .shadow(radius: 10, y: 10)
           }
@@ -235,36 +229,15 @@ struct AppView: View {
           
           Group {
             VStack {
-              HStack {
-                Text(viewStore.tuning.description)
-                  .font(.title2)
-                  .fontWeight(.bold)
-                  .fontDesign(.rounded)
-                  .frame(maxWidth: .infinity, alignment: .leading)
-                  .padding(.bottom, 4)
-                
-                Button {
-                  viewStore.send(.setIsSheetPresented(true))
-                } label: {
-                  Image(systemName: "ellipsis")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 20)
-                    .foregroundColor(.white)
-                }
-                .frame(width: 30, height: 30)
-                .background(.thinMaterial)
-                .clipShape(Circle())
-                .buttonStyle(.plain)
-              }
+              tuningHeader
               
               Divider()
               
-              tuningButtons
+              tuningNotes
                 .frame(maxWidth: .infinity)
                 .padding(.vertical)
               
-              playAllButton
+              tuningPlayAll
             }
             .padding()
             .background(.regularMaterial)
@@ -336,7 +309,7 @@ private extension AppView {
                 .frame(width: 50, height: 50)
                 .padding(12)
                 .frame(maxWidth: .infinity)
-                .background(.thinMaterial)
+                .background { Color.black.opacity(0.15) }
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .overlay {
                   RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -359,7 +332,33 @@ private extension AppView {
     }
   }
   
-  private var tuningButtons: some View {
+  private var tuningHeader: some View {
+    WithViewStore(store, observe: \.tuning, send: { .view($0) }) { viewStore in
+      HStack {
+        Text(viewStore.state.description)
+          .font(.title2)
+          .fontWeight(.bold)
+          .fontDesign(.rounded)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(.bottom, 4)
+        
+        Button {
+          viewStore.send(.setIsSheetPresented(true))
+        } label: {
+          Image(systemName: "ellipsis")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 20)
+        }
+        .frame(width: 30, height: 30)
+        .background { Color.black.opacity(0.15) }
+        .clipShape(Circle())
+        .buttonStyle(.plain)
+      }
+    }
+  }
+  
+  private var tuningNotes: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       HStack {
         ForEach(viewStore.notes) { note in
@@ -371,10 +370,12 @@ private extension AppView {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .foregroundColor(viewStore.inFlightNotes.contains(note) ? Color.white : .primary)
                 .background {
-                  Group {
-                    viewStore.inFlightNotes.contains(note) ? Color.green : Color(.systemGray6)
-                  }
-                  .opacity(viewStore.inFlightNotes.contains(note) ? 0.8 : 0.15)
+                  viewStore.inFlightNotes.contains(note)
+                  ? Color.green.opacity(0.8)
+                  : Color.black.opacity(0.15)
+                }
+                .background {
+                  Color.black.opacity(0.15)
                 }
                 .clipShape(Circle())
                 .overlay {
@@ -387,13 +388,12 @@ private extension AppView {
             .frame(maxWidth: .infinity)
           }
           .buttonStyle(.plain)
-          
         }
       }
     }
   }
   
-  private var playAllButton: some View {
+  private var tuningPlayAll: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       Button {
         viewStore.send(
