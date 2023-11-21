@@ -306,10 +306,11 @@ private extension AppView {
               Image(instrument.imageResource)
                 .resizable()
                 .scaledToFit()
+                .shadow(color: Color.black.opacity(0.25), radius: 3, y: 5)
                 .frame(width: 50, height: 50)
                 .padding(12)
                 .frame(maxWidth: .infinity)
-                .background { Color.black.opacity(0.15) }
+                .background { Color(.secondarySystemFill).opacity(0.25) }
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .overlay {
                   RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -372,10 +373,7 @@ private extension AppView {
                 .background {
                   viewStore.inFlightNotes.contains(note)
                   ? Color.green.opacity(0.8)
-                  : Color.black.opacity(0.15)
-                }
-                .background {
-                  Color.black.opacity(0.15)
+                  : Color(.secondarySystemFill).opacity(0.25)
                 }
                 .clipShape(Circle())
                 .overlay {
