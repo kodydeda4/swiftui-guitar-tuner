@@ -388,7 +388,7 @@ private extension AppView {
                     .strokeBorder(lineWidth: 0.75)
                     .foregroundColor(Color(.systemGray3))
                 }
-                .frame(width: 40, height: 40)
+                .frame(width: 44, height: 44)
             }
             .frame(maxWidth: .infinity)
           }
