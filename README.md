@@ -1,5 +1,3 @@
-![6-5-a](https://github.com/kodydeda4/GuitarTuner/assets/45678211/c7997909-216b-47f8-8b8e-b528d1475d8e)# Guitar Tuner
-
 ![Untitled](https://github.com/kodydeda4/PegPuzzleClassic/assets/45678211/9991a8fa-cd5e-467a-9dc0-daf3975d7494)
 
 <img width="225" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/62d32d7b-7ed9-4d3a-ac82-0b21d33a463d"/>
