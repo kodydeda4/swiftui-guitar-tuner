@@ -194,62 +194,11 @@ struct AppView: View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       NavigationStack {
         VStack {
-          VStack(spacing: 0) {
-            Text(viewStore.navigationTitle)
-              .font(.largeTitle)
-              .fontWeight(.bold)
-              .fontDesign(.rounded)
-              .frame(maxWidth: .infinity, alignment: .leading)
-              .padding(.vertical)
-            
-            VStack(spacing: 0) {
-              Color.black.frame(height: 250).opacity(0.01)
-              Divider()
-              
-              instrumentPicker
-                .padding()
-            }
-            .frame(maxWidth: .infinity)
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .overlay {
-              RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .strokeBorder(lineWidth: 0.75)
-                .foregroundColor(Color(.systemGray2))
-            }
-            .overlay {
-              instrumentView
-                .frame(height: 275)
-                .offset(y: -90)
-                .shadow(color: Color.black.opacity(0.15), radius: 10, y: 10)
-            }
-            .shadow(radius: 10, y: 10)
-          }
-          .padding()
-          
-          Group {
-            VStack {
-              tuningHeader
-              
-              Divider()
-              
-              tuningNotes
-                .frame(maxWidth: .infinity)
-                .padding(.vertical)
-              
-              tuningPlayAll
-            }
+          instruments
             .padding()
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .overlay {
-              RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .strokeBorder(lineWidth: 0.75)
-                .foregroundColor(Color(.systemGray2))
-            }
-            .shadow(radius: 10, y: 10)
-          }
-          .padding(.horizontal)
+          
+          tuning
+          Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background {
@@ -275,7 +224,46 @@ struct AppView: View {
   }
 }
 
+// MARK: - Instruments
+
 private extension AppView {
+  private var instruments: some View {
+    WithViewStore(store, observe: \.navigationTitle) { viewStore in
+      VStack(spacing: 0) {
+        Text(viewStore.state)
+          .font(.largeTitle)
+          .fontWeight(.bold)
+          .fontDesign(.rounded)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(.vertical)
+          .padding(.bottom)
+        
+        VStack(spacing: 0) {
+          Color.black.frame(height: 250).opacity(0.01)
+          Divider()
+          
+          instrumentPicker
+            .padding()
+        }
+        .frame(maxWidth: .infinity)
+        .background(.regularMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay {
+          RoundedRectangle(cornerRadius: 12, style: .continuous)
+            .strokeBorder(lineWidth: 0.75)
+            .foregroundColor(Color(.systemGray2))
+        }
+        .overlay {
+          instrumentView
+            .frame(height: 275)
+            .offset(y: -90)
+            .shadow(color: Color.black.opacity(0.15), radius: 10, y: 10)
+        }
+        .shadow(radius: 10, y: 10)
+      }
+    }
+  }
+  
   private var instrumentView: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       TabView(selection: viewStore.binding(get: \.instrument, send: { .setInstrument($0) })) {
@@ -331,6 +319,36 @@ private extension AppView {
       }
       .frame(maxWidth: .infinity, alignment: .trailing)
     }
+  }
+}
+  
+// MARK: - Tuning
+
+private extension AppView {
+  private var tuning: some View {
+    Group {
+      VStack {
+        tuningHeader
+        
+        Divider()
+        
+        tuningNotes
+          .frame(maxWidth: .infinity)
+          .padding(.vertical)
+        
+        tuningPlayAll
+      }
+      .padding()
+      .background(.regularMaterial)
+      .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+      .overlay {
+        RoundedRectangle(cornerRadius: 12, style: .continuous)
+          .strokeBorder(lineWidth: 0.75)
+          .foregroundColor(Color(.systemGray2))
+      }
+      .shadow(radius: 10, y: 10)
+    }
+    .padding(.horizontal)
   }
   
   private var tuningHeader: some View {
@@ -423,7 +441,11 @@ private extension AppView {
       }
     }
   }
-  
+}
+
+// MARK: - Sheet
+
+private extension AppView {
   private var sheet: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       NavigationStack {
