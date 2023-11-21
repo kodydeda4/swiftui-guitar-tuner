@@ -1,8 +1,8 @@
 ![Untitled](https://github.com/kodydeda4/PegPuzzleClassic/assets/45678211/9991a8fa-cd5e-467a-9dc0-daf3975d7494)
 
-<img width="225" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/62d32d7b-7ed9-4d3a-ac82-0b21d33a463d"/>
-<img width="225" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/1efdad55-6fff-4932-bc24-452a92e030a5"/>
-<img width="225" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/d9587656-46da-42cf-be4b-36ce9f1f2105"/>
+<img width="225" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/bc6d112c-fa9a-4a45-8f31-1a3455809d27"/>
+<img width="225" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/dd002da2-36e7-42f9-900a-f5b56f0b2c45"/>
+<img width="225" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/216bf2e7-0a1f-4b9b-80be-cc4a3029b533"/>
 
 ## About
 
@@ -29,3 +29,4 @@ Src
 ## Final Thoughts
 
 ✌️ Feedback, contributions, and thoughts greatly appreciated. Thanks!
+
