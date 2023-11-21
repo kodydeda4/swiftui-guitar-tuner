@@ -404,12 +404,17 @@ private extension AppView {
           .foregroundColor(.white)
           .frame(maxWidth: .infinity)
           .padding()
-          .background { viewStore.inFlightNotes.isEmpty ? Color.green : Color.red }
+          .background {
+            ZStack {
+              viewStore.inFlightNotes.isEmpty ? Color.green : Color.red
+              Color.black.opacity(0.15)
+            }
+          }
           .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
           .overlay {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
               .strokeBorder(lineWidth: 0.75)
-              .foregroundColor(Color.green)
+              .foregroundColor(viewStore.inFlightNotes.isEmpty ? Color.green : Color.red)
           }
           .shadow(radius: 10, y: 10)
       }
