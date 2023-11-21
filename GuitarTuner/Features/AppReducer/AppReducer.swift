@@ -203,7 +203,7 @@ struct AppView: View {
               .padding(.vertical)
             
             VStack(spacing: 0) {
-              content
+              instrumentView
                 .frame(height: 225)
                 .padding()
                 .frame(maxWidth: .infinity)
@@ -211,7 +211,7 @@ struct AppView: View {
               
               Divider()
               
-              instruments
+              instrumentPicker
                 .padding()
             }
             .frame(maxWidth: .infinity)
@@ -223,7 +223,7 @@ struct AppView: View {
                 .foregroundColor(Color(.systemGray2))
             }
             .overlay {
-              content
+              instrumentView
                 .frame(height: 275)
                 .offset(y: -90)
                 .shadow(color: Color.black.opacity(0.15), radius: 10, y: 10)
@@ -232,9 +232,9 @@ struct AppView: View {
             .shadow(radius: 10, y: 10)
           }
           .padding()
+          
           Group {
             VStack {
-              
               HStack {
                 Text(viewStore.tuning.description)
                   .font(.title2)
@@ -263,7 +263,8 @@ struct AppView: View {
               tuningButtons
                 .frame(maxWidth: .infinity)
                 .padding(.vertical)
-              footer
+              
+              playAllButton
             }
             .padding()
             .background(.regularMaterial)
@@ -302,7 +303,7 @@ struct AppView: View {
 }
 
 private extension AppView {
-  private var content: some View {
+  private var instrumentView: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       TabView(selection: viewStore.binding(get: \.instrument, send: { .setInstrument($0) })) {
         ForEach(SoundClient.Instrument.allCases) { instrument in
@@ -321,7 +322,7 @@ private extension AppView {
     }
   }
   
-  private var instruments: some View {
+  private var instrumentPicker: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       HStack {
         ForEach(SoundClient.Instrument.allCases) { instrument in
@@ -369,8 +370,12 @@ private extension AppView {
               Text(note.description.prefix(1))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .foregroundColor(viewStore.inFlightNotes.contains(note) ? Color.white : .primary)
-              //.background(.thinMaterial)
-                .background(viewStore.inFlightNotes.contains(note) ? Color.green : Color(.systemGray6))
+                .background {
+                  Group {
+                    viewStore.inFlightNotes.contains(note) ? Color.green : Color(.systemGray6)
+                  }
+                  .opacity(viewStore.inFlightNotes.contains(note) ? 0.8 : 0.15)
+                }
                 .clipShape(Circle())
                 .overlay {
                   Circle()
@@ -388,7 +393,7 @@ private extension AppView {
     }
   }
   
-  private var footer: some View {
+  private var playAllButton: some View {
     WithViewStore(store, observe: { $0 }, send: { .view($0) }) { viewStore in
       Button {
         viewStore.send(
