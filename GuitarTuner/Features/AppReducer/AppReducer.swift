@@ -358,7 +358,7 @@ private extension AppView {
             .frame(width: 20)
         }
         .frame(width: 30, height: 30)
-        .background { Color.black.opacity(0.15) }
+        .background { Color(.secondarySystemFill).opacity(0.25) }
         .clipShape(Circle())
         .buttonStyle(.plain)
       }
