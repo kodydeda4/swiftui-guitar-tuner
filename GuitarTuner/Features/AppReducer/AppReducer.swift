@@ -57,7 +57,7 @@ struct AppReducer {
   
   func reduce(into state: inout State, action: Action) -> Effect<Action> {
     switch action {
-        
+      
     case let .play(note):
       state.inFlightNotes.append(note)
       return .run { _ in await sound.play(note) }
@@ -74,7 +74,7 @@ struct AppReducer {
     case .playAllDidComplete:
       state.isPlayAllInFlight = false
       return .none
-        
+      
     case .saveSettings:
       return .run { [state = state] _ in
         try? userDefaults.set(
@@ -199,7 +199,6 @@ struct AppView: View {
               .font(.largeTitle)
               .fontWeight(.bold)
               .fontDesign(.rounded)
-              .foregroundColor(.white)
               .frame(maxWidth: .infinity, alignment: .leading)
               .padding(.vertical)
             
@@ -233,73 +232,62 @@ struct AppView: View {
             .shadow(radius: 10, y: 10)
           }
           .padding()
-            Group {
-              VStack {
+          Group {
+            VStack {
+              
+              HStack {
+                Text(viewStore.tuning.description)
+                  .font(.title2)
+                  .fontWeight(.bold)
+                  .fontDesign(.rounded)
+                  .frame(maxWidth: .infinity, alignment: .leading)
+                  .padding(.bottom, 4)
                 
-                HStack {
-                  Text(viewStore.tuning.description)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .fontDesign(.rounded)
+                Button {
+                  viewStore.send(.setIsSheetPresented(true))
+                } label: {
+                  Image(systemName: "ellipsis")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20)
                     .foregroundColor(.white)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                  //.padding(.top)
-                    .padding(.bottom, 4)
-                  
-                  Button {
-                    viewStore.send(.setIsSheetPresented(true))
-                  } label: {
-                    Image(systemName: "ellipsis")
-                      .resizable()
-                      .scaledToFit()
-                      .frame(width: 20)
-                      .foregroundColor(.white)
-                  }
-                  .frame(width: 30, height: 30)
-                  .background(.thinMaterial)
-                  .clipShape(Circle())
-                  .buttonStyle(.plain)
                 }
-                
-                Divider()
-                
-                tuningButtons
-                  .frame(maxWidth: .infinity)
-                  .padding(.vertical)
-                footer
+                .frame(width: 30, height: 30)
+                .background(.thinMaterial)
+                .clipShape(Circle())
+                .buttonStyle(.plain)
               }
-                .padding()
-                .background(.regularMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .overlay {
-                  RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .strokeBorder(lineWidth: 0.75)
-                    .foregroundColor(Color(.systemGray2))
-                }
-                .shadow(radius: 10, y: 10)
+              
+              Divider()
+              
+              tuningButtons
+                .frame(maxWidth: .infinity)
+                .padding(.vertical)
+              footer
             }
-            
-            //Spacer()
-            
-            
-            
-//          }
+            .padding()
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay {
+              RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(lineWidth: 0.75)
+                .foregroundColor(Color(.systemGray2))
+            }
+            .shadow(radius: 10, y: 10)
+          }
           .padding(.horizontal)
-
-          //.background(Color(.systemBackground))
-          //.background(.regularMaterial)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-//        .background {
-//          LinearGradient(
-//            colors: [Color.accentColor.opacity(0.75), .clear],
-//            startPoint: .top,
-//            endPoint: .bottom
-//          )
-//          .ignoresSafeArea()
-//        }
+        .background {
+          LinearGradient(
+            colors: [Color.accentColor.opacity(0.75), .clear],
+            startPoint: .top,
+            endPoint: .bottom
+          )
+          .ignoresSafeArea()
+        }
         .toolbar(.hidden, for: .navigationBar)
-        //.navigationTitle(viewStore.navigationTitle)
+        .navigationTitle(viewStore.navigationTitle)
         .sheet(
           isPresented: viewStore.binding(
             get: \.isSheetPresented,
@@ -351,9 +339,8 @@ private extension AppView {
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .overlay {
                   RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .strokeBorder(lineWidth: 2)
-                    .foregroundColor(.accentColor)
-                    .opacity(viewStore.instrument == instrument ? 1 : 0)
+                    .strokeBorder(lineWidth: viewStore.instrument == instrument ? 2 : 0.75)
+                    .foregroundColor(viewStore.instrument == instrument ? .accentColor : Color(.systemGray2))
                 }
               
               Text(instrument.description)
@@ -382,18 +369,10 @@ private extension AppView {
               Text(note.description.prefix(1))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .foregroundColor(viewStore.inFlightNotes.contains(note) ? Color.white : .primary)
-                .background(.thinMaterial)
-//                .background(viewStore.inFlightNotes.contains(note) ? Color.green : Color(.systemGray6))
-                //.clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+              //.background(.thinMaterial)
+                .background(viewStore.inFlightNotes.contains(note) ? Color.green : Color(.systemGray6))
                 .clipShape(Circle())
-//                .overlay {
-//                  RoundedRectangle(cornerRadius: 12, style: .continuous)
-//                    .strokeBorder(lineWidth: 2)
-//                    .foregroundColor(.green)
-//                    .opacity(viewStore.inFlightNotes.contains(note) ? 1 : 0)
-//                }
                 .overlay {
-                  //RoundedRectangle(cornerRadius: 12, style: .continuous)
                   Circle()
                     .strokeBorder(lineWidth: 0.75)
                     .foregroundColor(Color(.systemGray3))
@@ -425,13 +404,12 @@ private extension AppView {
           .foregroundColor(.white)
           .frame(maxWidth: .infinity)
           .padding()
-          .background(Color.green.opacity(0.75))
+          .background { viewStore.inFlightNotes.isEmpty ? Color.green : Color.red }
           .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
           .overlay {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
               .strokeBorder(lineWidth: 0.75)
               .foregroundColor(Color.green)
-              //.foregroundColor(Color(.systemGray2))
           }
           .shadow(radius: 10, y: 10)
       }
