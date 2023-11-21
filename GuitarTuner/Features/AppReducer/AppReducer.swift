@@ -15,7 +15,8 @@ import DependenciesAdditions
 // 1. Getting Started - https://youtu.be/JT-0UDZDAsU?si=pYqavx6mxjU4cREO//
 // 2. Sounds - https://youtu.be/-z8ire5WN3U?si=BUcTWYK7vAECFebV&t=470
 
-struct AppReducer: Reducer {
+@Reducer
+struct AppReducer {
   struct State: Equatable {
     var instrument = SoundClient.Instrument.guitar
     var tuning = SoundClient.InstrumentTuning.eStandard
@@ -24,7 +25,7 @@ struct AppReducer: Reducer {
     var isSheetPresented = false
   }
   
-  enum Action: Equatable {
+  enum Action {
     case play(Note)
     case stop(Note)
     case playAllCancel
@@ -33,7 +34,7 @@ struct AppReducer: Reducer {
     case loadSettingsResult(UserDefaultsClient.Settings)
     case view(View)
     
-    enum View: Equatable {
+    enum View {
       case task
       case noteButtonTapped(Note)
       case playAllStartButtonTapped
@@ -183,29 +184,6 @@ struct AppReducer: Reducer {
   }
 }
 
-private extension AppReducer.State {
-  var navigationTitle: String {
-    instrument.description
-  }
-  
-  var notes: [Note] {
-    switch instrument {
-    case .bass:
-      Array(tuning.notes.prefix(upTo: 4))
-    default:
-      Array(tuning.notes)
-    }
-  }
-}
-
-private extension UserDefaultsClient.Settings {
-  init(from state: AppReducer.State) {
-    self = Self(
-      instrument: state.instrument,
-      tuning: state.tuning
-    )
-  }
-}
 
 // MARK: - SwiftUI
 
@@ -255,9 +233,6 @@ struct AppView: View {
             .shadow(radius: 10, y: 10)
           }
           .padding()
-          
-
-            
             Group {
               VStack {
                 

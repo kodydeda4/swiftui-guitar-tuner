@@ -23,6 +23,7 @@
 		3363E6B12AFD89DD009A73D4 /* UserDefaultsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3363E6B02AFD89DD009A73D4 /* UserDefaultsClient.swift */; };
 		3363E6B52AFD9A76009A73D4 /* Tonic+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3363E6B42AFD9A76009A73D4 /* Tonic+.swift */; };
 		337C29B52AEBEEF1004FB6BD /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = 337C29B42AEBEEF1004FB6BD /* Tonic */; };
+		33B2B1D32B0C321700B8049C /* AppReducer.State+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B2B1D22B0C321700B8049C /* AppReducer.State+.swift */; };
 		33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D72ADDCC5B00EBC52A /* Main.swift */; };
 		33C200DA2ADDCC5B00EBC52A /* AppReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C200D92ADDCC5B00EBC52A /* AppReducer.swift */; };
 		33C200DC2ADDCC5D00EBC52A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33C200DB2ADDCC5D00EBC52A /* Assets.xcassets */; };
@@ -55,6 +56,7 @@
 		3363E6B02AFD89DD009A73D4 /* UserDefaultsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsClient.swift; sourceTree = "<group>"; };
 		3363E6B42AFD9A76009A73D4 /* Tonic+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tonic+.swift"; sourceTree = "<group>"; };
 		3365F7B32AEB2E1000014C39 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		33B2B1D22B0C321700B8049C /* AppReducer.State+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppReducer.State+.swift"; sourceTree = "<group>"; };
 		33C200D42ADDCC5B00EBC52A /* GuitarTuner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GuitarTuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		33C200D72ADDCC5B00EBC52A /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		33C200D92ADDCC5B00EBC52A /* AppReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReducer.swift; sourceTree = "<group>"; };
@@ -148,6 +150,7 @@
 			isa = PBXGroup;
 			children = (
 				33C200D92ADDCC5B00EBC52A /* AppReducer.swift */,
+				33B2B1D22B0C321700B8049C /* AppReducer.State+.swift */,
 			);
 			path = AppReducer;
 			sourceTree = "<group>";
@@ -379,6 +382,7 @@
 				33C200DA2ADDCC5B00EBC52A /* AppReducer.swift in Sources */,
 				33C200D82ADDCC5B00EBC52A /* Main.swift in Sources */,
 				332B301C2AEAF29400E507E8 /* SoundClient+Instrument.swift in Sources */,
+				33B2B1D32B0C321700B8049C /* AppReducer.State+.swift in Sources */,
 				332B301A2AEAF25200E507E8 /* SoundClient+InstrumentTuning.swift in Sources */,
 				3363E6B52AFD9A76009A73D4 /* Tonic+.swift in Sources */,
 				3363E6B12AFD89DD009A73D4 /* UserDefaultsClient.swift in Sources */,
@@ -688,7 +692,7 @@
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
+				minimumVersion = 1.4.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

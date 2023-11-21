@@ -19,7 +19,7 @@ struct Main: App {
       AppView(store: Store(
         initialState: AppReducer.State(),
         reducer: AppReducer.init
-      ))
+      ))      
     }
   }
 }

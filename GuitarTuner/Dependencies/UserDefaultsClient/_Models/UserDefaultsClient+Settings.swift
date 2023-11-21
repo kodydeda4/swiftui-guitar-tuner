@@ -7,3 +7,12 @@ extension UserDefaultsClient {
     var tuning = SoundClient.InstrumentTuning.eStandard
   }
 }
+
+extension UserDefaultsClient.Settings {
+  init(from state: AppReducer.State) {
+    self = Self(
+      instrument: state.instrument,
+      tuning: state.tuning
+    )
+  }
+}
