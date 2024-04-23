@@ -1,8 +1,8 @@
 ![header](https://github.com/kodydeda4/GuitarTuner/assets/45678211/986c2b77-dcf6-4a34-842b-e255cf22ae75)
 
-<img width="225" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/bc6d112c-fa9a-4a45-8f31-1a3455809d27"/>
-<img width="225" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/dd002da2-36e7-42f9-900a-f5b56f0b2c45"/>
-<img width="225" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/216bf2e7-0a1f-4b9b-80be-cc4a3029b533"/>
+<img width="200" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/bc6d112c-fa9a-4a45-8f31-1a3455809d27"/>
+<img width="200" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/dd002da2-36e7-42f9-900a-f5b56f0b2c45"/>
+<img width="200" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/216bf2e7-0a1f-4b9b-80be-cc4a3029b533"/>
 
 ## About
 
