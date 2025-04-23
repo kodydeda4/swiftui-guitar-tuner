@@ -4,7 +4,7 @@ A SwiftUI-based guitar tuner for iOS, iPadOS, and macOS.
 
 Available on the [AppStore](https://apps.apple.com/us/app/accutune-guitar-tuner/id6472688914) now!
 
-[![IDD Camera App Store Badge](https://github.com/user-attachments/assets/25ef15ca-5a73-447b-affa-a0b26a1d7082)](https://apps.apple.com/us/app/accutune-guitar-tuner/id6472688914)
+[![appstore-badge](https://github.com/user-attachments/assets/f795f0ec-e104-4983-a696-dd6d6c503705)](https://apps.apple.com/us/app/peg-puzzle-classic/id6469359729)
 
 <img width="200" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/bc6d112c-fa9a-4a45-8f31-1a3455809d27"/>
 <img width="200" src="https://github.com/kodydeda4/GuitarTuner/assets/45678211/dd002da2-36e7-42f9-900a-f5b56f0b2c45"/>
